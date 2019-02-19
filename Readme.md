@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Антон Тимичев](https://up.htmlacademy.ru/ecmascript/8/user/699951).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Буртылев](https://htmlacademy.ru/profile/id3341).
 
 ---
 
