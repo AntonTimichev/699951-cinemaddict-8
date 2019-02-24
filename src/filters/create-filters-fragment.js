@@ -1,5 +1,29 @@
 import {capitalizeFirstLetter, createElement} from "../utils";
 
+const FiltersData = [
+  {
+    id: `all`,
+    label: `All movies`,
+    isActive: true
+  },
+  {
+    id: `watchlist`,
+    count: 13
+  },
+  {
+    id: `history`,
+    count: 4
+  },
+  {
+    id: `favorites`,
+    count: 8
+  },
+  {
+    id: `stats`,
+    additional: true
+  },
+];
+
 function createFilterTemplate({id, label = capitalizeFirstLetter(id), count = 0, isActive = false, additional = false}) {
   const className = `"main-navigation__item 
   ${isActive ? `main-navigation__item--active` : ``} 
@@ -12,8 +36,8 @@ function getFilterElement(filterInfo) {
   return createElement(template);
 }
 
-export function getFiltersFragment(data) {
+export function getFiltersFragment() {
   const filtersFragment = document.createDocumentFragment();
-  data.forEach((filterInfo) => filtersFragment.appendChild(getFilterElement(filterInfo)));
+  FiltersData.forEach((filterInfo) => filtersFragment.appendChild(getFilterElement(filterInfo)));
   return filtersFragment;
 }

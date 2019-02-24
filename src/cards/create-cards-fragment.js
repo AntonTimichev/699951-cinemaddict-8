@@ -23,8 +23,8 @@ export function getCardsFragments(data) {
     }
   });
   return {
-    main: cardsMainFragment,
-    top: cardsTopFragment,
-    commented: cardsCommentedFragment
+    mainBlockCards: cardsMainFragment,
+    topBlockCards: cardsTopFragment,
+    commentedBlockCards: cardsCommentedFragment
   };
 }

@@ -74,27 +74,3 @@ export const FilmsData = [
     comments: `13 comments`
   }
 ];
-
-export const FiltersData = [
-  {
-    id: `all`,
-    label: `All movies`,
-    isActive: true
-  },
-  {
-    id: `watchlist`,
-    count: 13
-  },
-  {
-    id: `history`,
-    count: 4
-  },
-  {
-    id: `favorites`,
-    count: 8
-  },
-  {
-    id: `stats`,
-    additional: true
-  },
-];

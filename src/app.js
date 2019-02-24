@@ -8,12 +8,15 @@ export function renderFilters(elements) {
   filtersContainer.appendChild(elements);
 }
 
-export function renderCards(elements) {
-  const {main, top, commented} = elements;
+export function renderMainCards(elements) {
   filmsMainContainer.innerHTML = ``;
+  filmsMainContainer.appendChild(elements);
+}
+
+export function renderExtraCards(elements) {
+  const {topBlockCards, commentedBlockCards} = elements;
   filmsTopContainer.innerHTML = ``;
   filmsCommentedContainer.innerHTML = ``;
-  filmsMainContainer.appendChild(main);
-  filmsTopContainer.appendChild(top);
-  filmsCommentedContainer.appendChild(commented);
+  filmsTopContainer.appendChild(topBlockCards);
+  filmsCommentedContainer.appendChild(commentedBlockCards);
 }
