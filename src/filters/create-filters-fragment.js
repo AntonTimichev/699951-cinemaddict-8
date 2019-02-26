@@ -1,6 +1,6 @@
 import {capitalizeFirstLetter, createElement} from "../utils";
 
-const FiltersData = [
+export const FiltersData = [
   {
     id: `all`,
     label: `All movies`,
@@ -31,13 +31,7 @@ function createFilterTemplate({id, label = capitalizeFirstLetter(id), count = 0,
   return `<a href="#${id}" class=${className}>${label} ${count ? `<span class="main-navigation__item-count">${count}</span>` : ``}</a>`;
 }
 
-function getFilterElement(filterInfo) {
+export function createFilterElement(filterInfo) {
   const template = createFilterTemplate(filterInfo);
   return createElement(template);
-}
-
-export function getFiltersFragment() {
-  const filtersFragment = document.createDocumentFragment();
-  FiltersData.forEach((filterInfo) => filtersFragment.appendChild(getFilterElement(filterInfo)));
-  return filtersFragment;
 }

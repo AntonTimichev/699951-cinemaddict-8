@@ -26,6 +26,71 @@ export const FilmsData = [
     controls: true
   },
   {
+    title: `Incredibles 2`,
+    rating: `9.8`,
+    info: {
+      year: `2018`,
+      duration: `1h 13m`,
+      genre: `Comedy`
+    },
+    src: `./images/posters/moonrise.jpg`,
+    description: `A priests Romania and confront a malevolent force in the form of a demonic nun.`,
+    comments: `13 comments`,
+    controls: true
+  },
+  {
+    title: `Incredibles 2`,
+    rating: `9.8`,
+    info: {
+      year: `2018`,
+      duration: `1h 13m`,
+      genre: `Comedy`
+    },
+    src: `./images/posters/moonrise.jpg`,
+    description: `A priests Romania and confront a malevolent force in the form of a demonic nun.`,
+    comments: `13 comments`,
+    controls: true
+  },
+  {
+    title: `Incredibles 2`,
+    rating: `9.8`,
+    info: {
+      year: `2018`,
+      duration: `1h 13m`,
+      genre: `Comedy`
+    },
+    src: `./images/posters/moonrise.jpg`,
+    description: `A priests Romania and confront a malevolent force in the form of a demonic nun.`,
+    comments: `13 comments`,
+    controls: true
+  },
+  {
+    title: `Incredibles 2`,
+    rating: `9.8`,
+    info: {
+      year: `2018`,
+      duration: `1h 13m`,
+      genre: `Comedy`
+    },
+    src: `./images/posters/moonrise.jpg`,
+    description: `A priests Romania and confront a malevolent force in the form of a demonic nun.`,
+    comments: `13 comments`,
+    controls: true
+  },
+  {
+    title: `Incredibles 2`,
+    rating: `9.8`,
+    info: {
+      year: `2018`,
+      duration: `1h 13m`,
+      genre: `Comedy`
+    },
+    src: `./images/posters/moonrise.jpg`,
+    description: `A priests Romania and confront a malevolent force in the form of a demonic nun.`,
+    comments: `13 comments`,
+    controls: true
+  },
+  {
     box: `top`,
     title: `Incredibles 2`,
     rating: `9.8`,
