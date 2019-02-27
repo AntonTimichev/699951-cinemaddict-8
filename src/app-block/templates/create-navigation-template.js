@@ -1,6 +1,6 @@
-import {capitalizeFirstLetter, createElement} from "../utils";
+import {capitalizeFirstLetter} from "../../utils";
 
-export const FiltersData = [
+const FiltersData = [
   {
     id: `all`,
     label: `All movies`,
@@ -24,14 +24,15 @@ export const FiltersData = [
   },
 ];
 
-function createFilterTemplate({id, label = capitalizeFirstLetter(id), count = 0, isActive = false, additional = false}) {
+function createFilterButtonTemplate({id, label = capitalizeFirstLetter(id), count = 0, isActive = false, additional = false}) {
   const className = `"main-navigation__item 
   ${isActive ? `main-navigation__item--active` : ``} 
   ${additional ? `main-navigation__item--additional` : ``}"`;
   return `<a href="#${id}" class=${className}>${label} ${count ? `<span class="main-navigation__item-count">${count}</span>` : ``}</a>`;
 }
 
-export function createFilterElement(filterInfo) {
-  const template = createFilterTemplate(filterInfo);
-  return createElement(template);
+export function createNavigationTemplate() {
+  return `<nav class="main-navigation">
+    ${FiltersData.map((filterInfo) => createFilterButtonTemplate(filterInfo)).join(``)}
+    </nav>`;
 }
