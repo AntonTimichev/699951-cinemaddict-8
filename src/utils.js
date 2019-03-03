@@ -1,31 +1,25 @@
-function prepareDataForTemplate(data) {
-  const {
-    box = `main`,
-    title = `Incredibles 2`,
-    rating = `9.8`,
-    info = {
-      year: `2018`,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src = `./images/posters/moonrise.jpg`,
-    description = ``,
-    comments = ``,
-    controls = false,
-    ...settings
-  } = data;
+function sortByComments(data) {
+  return data.sort((a, b) => {
+    let commentA = parseInt(a.comments, 10);
+    let commentB = parseInt(b.comments, 10);
+    return commentB - commentA;
+  });
+}
 
-  return {
-    box,
-    title,
-    rating,
-    info,
-    src,
-    description,
-    comments,
-    controls,
-    ...settings
-  };
+function sortByRating(data) {
+  return data.sort((a, b) => {
+    let ratingA = parseFloat(a.rating);
+    let ratingB = parseFloat(b.rating);
+    return ratingB - ratingA;
+  });
+}
+
+export function getRandomElements(array, amount = 1) {
+  if (amount > array.length) {
+    return array;
+  }
+  let copyArr = array.slice();
+  return Array.from({length: amount}, () => copyArr.splice(getRandomInteger(0, copyArr.length - 1), 1)[0]);
 }
 
 export function getRandomInteger(min, max) {
@@ -44,16 +38,11 @@ export function capitalizeFirstLetter(id) {
 }
 
 export function sortCards(data) {
-  const sortedData = {
-    main: [],
-    top: [],
-    commented: []
+  return {
+    main: data.slice(),
+    top: sortByRating(data).slice(0, 2),
+    commented: sortByComments(data).slice(0, 2)
   };
-  data.forEach((card) => {
-    const prepareCard = prepareDataForTemplate(card);
-    sortedData[`${prepareCard.box}`].push(prepareCard);
-  });
-  return sortedData;
 }
 
 export function createFragment(data, create) {

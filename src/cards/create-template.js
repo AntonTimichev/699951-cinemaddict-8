@@ -1,12 +1,12 @@
 export function createCardTemplate(data) {
-  const {title, rating, src, description = false, comments, controls = false, info} = data;
+  const {title, rating, src, description = false, comments, controls, info} = data;
   return `<article class="film-card ${!controls ? `film-card--no-controls` : ``}">
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${rating}</p>
     ${createCardInfo(info)}
     <img src=${src} alt="" class="film-card__poster">
     ${description ? `<p class="film-card__description">${description}</p>` : ``}
-    <button class="film-card__comments">${comments}</button>
+    <button class="film-card__comments">${comments} comments</button>
     
     ${controls ? createCardForm() : ``}
   </article>`;
