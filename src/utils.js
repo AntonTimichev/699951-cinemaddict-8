@@ -1,17 +1,17 @@
 function sortByComments(data) {
   return data.sort((a, b) => {
-    let commentA = parseInt(a.comments, 10);
-    let commentB = parseInt(b.comments, 10);
-    return commentB - commentA;
+    return b.comments - a.comments;
   });
 }
 
 function sortByRating(data) {
   return data.sort((a, b) => {
-    let ratingA = parseFloat(a.rating);
-    let ratingB = parseFloat(b.rating);
-    return ratingB - ratingA;
+    return b.rating - a.rating;
   });
+}
+
+export function getRandomArbitary(min, max) {
+  return (Math.random() * (max - min) + min).toFixed(1);
 }
 
 export function getRandomElements(array, amount = 1) {
@@ -37,7 +37,7 @@ export function capitalizeFirstLetter(id) {
   return `${id[0].toUpperCase()}${id.slice(1)}`;
 }
 
-export function sortCards(data) {
+export function getCardsDataForContainers(data) {
   return {
     main: data.slice(),
     top: sortByRating(data).slice(0, 2),
@@ -47,6 +47,6 @@ export function sortCards(data) {
 
 export function createFragment(data, create) {
   const fragmentElements = document.createDocumentFragment();
-  data.forEach((filterInfo) => fragmentElements.appendChild(create(filterInfo)));
+  data.forEach((cardInfo) => fragmentElements.appendChild(create(cardInfo)));
   return fragmentElements;
 }

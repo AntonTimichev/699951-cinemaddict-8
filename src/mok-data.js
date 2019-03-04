@@ -1,4 +1,6 @@
-export const descElements = [
+import {getRandomElements, getRandomInteger, getRandomArbitary} from "./utils";
+
+const descElements = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
   `Cras aliquet varius magna, non porta ligula feugiat eget.`,
   `Fusce tristique felis at fermentum pharetra.`,
@@ -12,10 +14,22 @@ export const descElements = [
   `In rutrum ac purus sit amet tempus`
 ];
 
+const titles = [
+  `Special one`,
+  `Intouchables `,
+  `Inception `,
+  `Knockin' on Heaven's Door`,
+  `A Beautiful Mind`,
+  `Back to the Future`,
+  `Shutter Island`,
+  `Saving Private Ryan`,
+  `Live Another Day`
+];
+
 export const FilmsData = [
   {
     title: `The Assassination Of Jessie James By The Coward Robert Ford`,
-    rating: 9.1,
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2010,
       duration: `1h 13m`,
@@ -27,7 +41,7 @@ export const FilmsData = [
   },
   {
     title: `Incredibles 2`,
-    rating: 9.2,
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2017,
       duration: `1h 13m`,
@@ -38,8 +52,8 @@ export const FilmsData = [
     comments: 8
   },
   {
-    title: `Live Another Day`,
-    rating: 9.5,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     seasons: {
       first: [`one`, `two`, `three`, `four`, `five`],
       second: [`oneS`, `twoS`, `threeS`, `fourS`, `fiveS`]
@@ -49,95 +63,105 @@ export const FilmsData = [
       duration: `50m`,
       genre: `detective`
     },
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
     ageLimit: `18+`,
     src: `./images/posters/moonrise.jpg`,
-    comments: 5
+    comments: getRandomInteger(1, 20)
   },
   {
-    title: `Incredibles 2`,
-    rating: 8,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2018,
       duration: `1h 13m`,
       genre: `Comedy`
     },
     src: `./images/posters/moonrise.jpg`,
-    comments: 11
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    comments: getRandomInteger(1, 20)
   },
   {
-    title: `Incredibles 2`,
-    rating: 8.3,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2018,
       duration: `1h 13m`,
       genre: `Comedy`
     },
     src: `./images/posters/moonrise.jpg`,
-    comments: 13
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    comments: getRandomInteger(1, 20)
   },
   {
-    title: `Incredibles 2`,
-    rating: 9.0,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2015,
       duration: `1h 13m`,
       genre: `Comedy`
     },
     src: `./images/posters/moonrise.jpg`,
-    comments: 16
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    comments: getRandomInteger(1, 20)
   },
   {
-    title: `Incredibles 2`,
-    rating: 9.9,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2013,
       duration: `1h 13m`,
       genre: `Comedy`
     },
     src: `./images/posters/moonrise.jpg`,
-    comments: 14,
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    comments: getRandomInteger(1, 20)
   },
   {
-    title: `Incredibles 2`,
-    rating: 9.1,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2018,
       duration: `1h 13m`,
       genre: `Comedy`
     },
     src: `./images/posters/fuga-da-new-york.jpg`,
-    comments: 21
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    comments: getRandomInteger(1, 20)
   },
   {
-    title: `Incredibles 2`,
-    rating: 4.6,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2008,
       duration: `1h 13m`,
       genre: `Comedy`
     },
     src: `./images/posters/blue-blazes.jpg`,
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    comments: getRandomInteger(1, 20)
   },
   {
-    title: `Incredibles 2`,
-    rating: 6.9,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2018,
       duration: `1h 13m`,
       genre: `Comedy`
     },
     src: `./images/posters/accused.jpg`,
-    comments: 9
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    comments: getRandomInteger(1, 20)
   },
   {
-    title: `Incredibles 2`,
-    rating: 5.9,
+    title: getRandomElements(titles, 1),
+    rating: getRandomArbitary(6, 10),
     info: {
       year: 2011,
       duration: `1h 13m`,
       genre: `Comedy`
     },
     src: `./images/posters/blackmail.jpg`,
-    comments: 10
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    comments: getRandomInteger(1, 20)
   }
 ];
