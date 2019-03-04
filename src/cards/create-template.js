@@ -49,7 +49,7 @@ function prepareDataForTemplate(data) {
 }
 
 export function createCardTemplate(data) {
-  const {title, rating, src, description = false, comments, controls, info, ...other} = prepareDataForTemplate(data);
+  const {title, rating, src, description = false, comments, controls, info} = prepareDataForTemplate(data);
   return `<article class="film-card ${!controls ? `film-card--no-controls` : ``}">
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${rating}</p>
