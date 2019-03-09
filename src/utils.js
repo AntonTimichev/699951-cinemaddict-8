@@ -45,8 +45,8 @@ export function getCardsDataForContainers(data) {
   };
 }
 
-export function createFragment(data, create) {
+export function createFragment(elements) {
   const fragmentElements = document.createDocumentFragment();
-  data.forEach((cardInfo) => fragmentElements.appendChild(create(cardInfo)));
+  elements.forEach((element) => fragmentElements.appendChild(element));
   return fragmentElements;
 }

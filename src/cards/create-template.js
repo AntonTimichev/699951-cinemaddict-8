@@ -7,7 +7,7 @@ function prepareDataForTemplate(data) {
     ageLimit = `16+`,
     premiere = `2019`,
     releaseDate = ``,
-    averageRating = ``,
+    rate = ``,
     country = ``,
     marks = {
       favorites: false,
@@ -38,7 +38,7 @@ function prepareDataForTemplate(data) {
     ageLimit,
     premiere,
     releaseDate,
-    averageRating,
+    rate,
     country,
     marks,
     description,

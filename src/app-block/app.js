@@ -49,5 +49,6 @@ export function initApp(container) {
   mainFilmsContainer = appElement.querySelector(`.films-list .films-list__container`);
   topFilmsContainer = appElement.querySelector(`.films-list--extra:nth-last-child(2) .films-list__container`);
   commentedFilmsContainer = appElement.querySelector(`.films-list--extra:last-child .films-list__container`);
+  activeFilterButton = filtersContainer.querySelector(`.main-navigation__item--active`);
   container.appendChild(appElement);
 }
