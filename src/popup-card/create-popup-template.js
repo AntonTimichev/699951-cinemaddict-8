@@ -1,4 +1,19 @@
-export function createPopupTemplate() {
+export function createPopupTemplate(data) {
+  const {
+    title,
+    rating,
+    info,
+    src,
+    originTitle,
+    actors,
+    ageLimit,
+    releaseDate,
+    rate,
+    country,
+    description,
+    comments
+  } = data;
+
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__close">
@@ -6,21 +21,21 @@ export function createPopupTemplate() {
     </div>
     <div class="film-details__info-wrap">
       <div class="film-details__poster">
-        <img class="film-details__poster-img" src="images/posters/blackmail.jpg" alt="incredables-2">
+        <img class="film-details__poster-img" src=${src} alt=${title}>
 
-        <p class="film-details__age">18+</p>
+        <p class="film-details__age">${ageLimit}+</p>
       </div>
 
       <div class="film-details__info">
         <div class="film-details__info-head">
           <div class="film-details__title-wrap">
-            <h3 class="film-details__title">Incredibles 2</h3>
-            <p class="film-details__title-original">Original: Невероятная семейка</p>
+            <h3 class="film-details__title">${title}</h3>
+            <p class="film-details__title-original">Original: ${originTitle}</p>
           </div>
 
           <div class="film-details__rating">
-            <p class="film-details__total-rating">5.2</p>
-            <p class="film-details__user-rating">Your rate 8</p>
+            <p class="film-details__total-rating">${rating}</p>
+            <p class="film-details__user-rating">Your rate ${rate}</p>
           </div>
         </div>
 
@@ -35,32 +50,31 @@ export function createPopupTemplate() {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
-            <td class="film-details__cell">Samuel L. Jackson, Catherine Keener, Sophia Bush</td>
+            <td class="film-details__cell">${actors}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">15 June 2018 (USA)</td>
+            <td class="film-details__cell">${releaseDate} (USA)</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">118 min</td>
+            <td class="film-details__cell">${info.duration}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-            <td class="film-details__cell">USA</td>
+            <td class="film-details__cell">${country}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">Animation</span>
+              <span class="film-details__genre">${info.genre}</span>
               <span class="film-details__genre">Action</span>
               <span class="film-details__genre">Adventure</span></td>
           </tr>
         </table>
 
         <p class="film-details__film-description">
-          The Incredibles hero family takes on a new mission, which involves a change in family roles:
-          Bob Parr (Mr Incredible) must manage the house while his wife Helen (Elastigirl) goes out to save the world.
+          ${description}
         </p>
       </div>
     </div>
@@ -77,7 +91,7 @@ export function createPopupTemplate() {
     </section>
 
     <section class="film-details__comments-wrap">
-      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">1</span></h3>
+      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments}</span></h3>
 
       <ul class="film-details__comments-list">
         <li class="film-details__comment">

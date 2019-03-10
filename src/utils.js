@@ -50,3 +50,7 @@ export function createFragment(elements) {
   elements.forEach((element) => fragmentElements.appendChild(element));
   return fragmentElements;
 }
+
+export function getArrayCards(fn, amount) {
+  return Array.from({length: amount}, () => fn());
+}
