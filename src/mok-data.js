@@ -1,4 +1,4 @@
-import {getRandomElements, getRandomInteger, getRandomArbitary} from "./utils";
+import {getRandomElements, getRandomInteger, getRandomArbitary, getArrayCards} from "./utils";
 
 const descElements = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -16,152 +16,82 @@ const descElements = [
 
 const titles = [
   `Special one`,
-  `Intouchables `,
-  `Inception `,
+  `Intouchables`,
+  `Inception`,
   `Knockin' on Heaven's Door`,
   `A Beautiful Mind`,
   `Back to the Future`,
   `Shutter Island`,
   `Saving Private Ryan`,
-  `Live Another Day`
+  `Live Another Day`,
+  `The Assassination Of Jessie James By The Coward Robert Ford`,
+  `Incredibles 2`
 ];
 
-export const FilmsData = [
-  {
-    title: `The Assassination Of Jessie James By The Coward Robert Ford`,
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2010,
-      duration: `1h 13m`,
-      genre: `сomedy`
-    },
-    src: `./images/posters/three-friends.jpg`,
-    description: `A priest with a haunted past and a novice on the threshold of her final vows are sent by the Vatican to investigate the death of a young nun in Romania and confront a malevolent force in the form of a demonic nun.`,
-    comments: 13
-  },
-  {
-    title: `Incredibles 2`,
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2017,
-      duration: `1h 13m`,
-      genre: `сomedy`
-    },
-    src: `./images/posters/moonrise.jpg`,
-    description: `A priests Romania and confront a malevolent force in the form of a demonic nun.`,
-    comments: 8
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    seasons: {
-      first: [`one`, `two`, `three`, `four`, `five`],
-      second: [`oneS`, `twoS`, `threeS`, `fourS`, `fiveS`]
-    },
-    info: {
-      year: 2012,
-      duration: `50m`,
-      genre: `detective`
-    },
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    ageLimit: `18+`,
-    src: `./images/posters/moonrise.jpg`,
-    comments: getRandomInteger(1, 20)
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2018,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src: `./images/posters/moonrise.jpg`,
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    comments: getRandomInteger(1, 20)
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2018,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src: `./images/posters/moonrise.jpg`,
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    comments: getRandomInteger(1, 20)
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2015,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src: `./images/posters/moonrise.jpg`,
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    comments: getRandomInteger(1, 20)
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2013,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src: `./images/posters/moonrise.jpg`,
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    comments: getRandomInteger(1, 20)
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2018,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src: `./images/posters/fuga-da-new-york.jpg`,
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    comments: getRandomInteger(1, 20)
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2008,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src: `./images/posters/blue-blazes.jpg`,
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    comments: getRandomInteger(1, 20)
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2018,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src: `./images/posters/accused.jpg`,
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    comments: getRandomInteger(1, 20)
-  },
-  {
-    title: getRandomElements(titles, 1),
-    rating: getRandomArbitary(6, 10),
-    info: {
-      year: 2011,
-      duration: `1h 13m`,
-      genre: `Comedy`
-    },
-    src: `./images/posters/blackmail.jpg`,
-    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
-    comments: getRandomInteger(1, 20)
-  }
+const runtimes = [
+  `1h 13m`,
+  `2h 50m`,
+  `1h 46m`,
+  `34m`,
+  `1h 22m`,
+  `1h 19m`,
+  `59m`,
+  `1h 17m`,
+  `1h 57m`
 ];
+
+const genres = [
+  `detective`,
+  `comedy`,
+  `drama`,
+  `criminal`,
+  `triller`,
+  `amine`,
+  `action`
+];
+
+const images = [
+  `./images/posters/moonrise.jpg`,
+  `./images/posters/three-friends.jpg`,
+  `./images/posters/moonrise.jpg`,
+  `./images/posters/fuga-da-new-york.jpg`,
+  `./images/posters/blue-blazes.jpg`,
+  `./images/posters/accused.jpg`,
+  `./images/posters/blackmail.jpg`
+];
+
+const actors = [
+  `Tom Hanks`,
+  `Christian Bale`,
+  `Morgan Freeman`,
+  `Leonardo DiCaprio`,
+  `Robert De Niro`,
+  `Robert Downey Jr.`,
+  `Gary Oldman`,
+  `Edward Norton`,
+  `Liam Neeson`,
+  `Matt Damon`,
+  `Hugh Jackman`
+];
+
+function createFilmCard() {
+  return {
+    title: getRandomElements(titles, 1)[0],
+    rating: getRandomArbitary(6, 10),
+    info: {
+      timestamp: Date.now() - ((1000 * 60 * 60 * 24 * 366) * getRandomInteger(1, 10)),
+      duration: getRandomElements(runtimes, 1)[0],
+      genre: getRandomElements(genres, 1)[0],
+    },
+    description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
+    ageLimit: getRandomInteger(12, 18),
+    src: getRandomElements(images, 1)[0],
+    comments: getRandomInteger(1, 20),
+    actors: getRandomElements(actors, getRandomInteger(1, 3)).join(` `),
+    rate: getRandomArbitary(3, 9),
+    releaseDate: 2019,
+    country: `USA`
+  };
+}
+
+export const FilmsData = getArrayCards(createFilmCard, 12);

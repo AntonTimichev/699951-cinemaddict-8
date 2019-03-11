@@ -1,26 +1,13 @@
 function prepareDataForTemplate(data) {
   const {
     title = ``,
-    originTitle = ``,
-    actors = [],
-    seasons = {},
-    ageLimit = `16+`,
-    premiere = `2019`,
-    releaseDate = ``,
-    averageRating = ``,
-    country = ``,
-    marks = {
-      favorites: false,
-      seen: false,
-      look: true
-    },
-    rating = `9.8`,
+    rating = ``,
     info = {
-      year: `2018`,
-      duration: `1h 13m`,
-      genre: `Comedy`
+      timestamp: ``,
+      duration: ``,
+      genre: ``
     },
-    src = `./images/posters/moonrise.jpg`,
+    src = ``,
     description = ``,
     comments = ``,
     controls = true,
@@ -32,15 +19,6 @@ function prepareDataForTemplate(data) {
     rating,
     info,
     src,
-    originTitle,
-    actors,
-    seasons,
-    ageLimit,
-    premiere,
-    releaseDate,
-    averageRating,
-    country,
-    marks,
     description,
     comments,
     controls,
@@ -63,7 +41,9 @@ export function createCardTemplate(data) {
 }
 
 function createCardInfo(infoData) {
-  const {year, duration, genre} = infoData;
+  const {timestamp, duration, genre} = infoData;
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
   return `<p class="film-card__info">
     <span class="film-card__year">${year}</span>
     <span class="film-card__duration">${duration}</span>
