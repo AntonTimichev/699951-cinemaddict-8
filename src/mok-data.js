@@ -89,6 +89,8 @@ function createFilmCard() {
     comments: getRandomInteger(1, 20),
     actors: getRandomElements(actors, getRandomInteger(1, 3)).join(` `),
     rate: getRandomArbitary(3, 9),
+    releaseDate: 2019,
+    country: `USA`
   };
 }
 

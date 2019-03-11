@@ -9,66 +9,16 @@ export class Card {
   }
 
   get template() {
-    return createCardTemplate(this.getData());
+    return createCardTemplate(this._data);
   }
 
   onClickHandler(evt) {
     evt.preventDefault();
-    this._onClickHandler(this.prepareDataForTemplate());
+    this._onClickHandler(this.getData());
   }
 
   set onClick(func) {
     this._onClickHandler = func;
-  }
-
-  prepareDataForTemplate() {
-    const {
-      title = ``,
-      originTitle = title,
-      actors = ``,
-      seasons = {},
-      ageLimit = ``,
-      premiere = ``,
-      releaseDate = `12 jun 2019`,
-      rate = ``,
-      country = `USA`,
-      marks = {
-        favorites: false,
-        seen: false,
-        look: true
-      },
-      rating = ``,
-      info = {
-        timestamp: ``,
-        duration: ``,
-        genre: ``
-      },
-      src = ``,
-      description = ``,
-      comments = ``,
-      controls = true,
-      ...settings
-    } = this._data;
-
-    return {
-      title,
-      rating,
-      info,
-      src,
-      originTitle,
-      actors,
-      seasons,
-      ageLimit,
-      premiere,
-      releaseDate,
-      rate,
-      country,
-      marks,
-      description,
-      comments,
-      controls,
-      ...settings
-    };
   }
 
   bind() {
@@ -76,7 +26,7 @@ export class Card {
   }
 
   getData() {
-    return Object.assign({}, this.prepareDataForTemplate());
+    return Object.assign({}, this._data);
   }
 
   render() {
