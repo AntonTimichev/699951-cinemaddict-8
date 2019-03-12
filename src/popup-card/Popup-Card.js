@@ -1,10 +1,9 @@
 import {createPopupTemplate} from './create-popup-template';
-import {createElement} from "../utils";
+import {Component} from "../Component";
 
-export class Popup {
+export class Popup extends Component {
   constructor(data) {
-    this._data = data;
-    this._element = null;
+    super(data);
     this._closeBtn = null;
     this.onClickHandler = this.onClickHandler.bind(this);
   }
@@ -13,10 +12,6 @@ export class Popup {
     evt.preventDefault();
     this.unbind();
     this._onClickHandler(this._element);
-  }
-
-  set onClick(func) {
-    this._onClickHandler = func;
   }
 
   bind() {
@@ -31,11 +26,5 @@ export class Popup {
 
   get template() {
     return createPopupTemplate(this._data);
-  }
-
-  render() {
-    this._element = createElement(this.template).children[0];
-    this.bind();
-    return this._element;
   }
 }
