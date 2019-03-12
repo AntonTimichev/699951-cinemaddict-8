@@ -1,10 +1,12 @@
 import {createElement} from "./utils";
 
 export class Component {
-  constructor() {
+  constructor(data) {
     if (new.target === Component) {
       throw new Error(`Can't instantiate Component, only concrete one.`);
     }
+    this._data = data;
+    this._element = null;
   }
 
   get template() {

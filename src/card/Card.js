@@ -3,9 +3,7 @@ import {Component} from "../Component";
 
 export class Card extends Component {
   constructor(data) {
-    super();
-    this._data = data;
-    this._element = null;
+    super(data);
     this.onClickHandler = this.onClickHandler.bind(this);
   }
 
