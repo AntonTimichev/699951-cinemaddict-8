@@ -1,6 +1,6 @@
 function sortByComments(data) {
   return data.sort((a, b) => {
-    return b.comments - a.comments;
+    return b.comments.length - a.comments.length;
   });
 }
 
@@ -51,6 +51,6 @@ export function createFragment(elements) {
   return fragmentElements;
 }
 
-export function getArrayCards(fn, amount) {
+export function getRandomLengthArray(fn, amount) {
   return Array.from({length: amount}, () => fn());
 }

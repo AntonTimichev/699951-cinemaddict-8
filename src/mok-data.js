@@ -1,4 +1,4 @@
-import {getRandomElements, getRandomInteger, getRandomArbitary, getArrayCards} from "./utils";
+import {getRandomElements, getRandomInteger, getRandomArbitary, getRandomLengthArray} from "./utils";
 
 const descElements = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -74,6 +74,37 @@ const actors = [
   `Hugh Jackman`
 ];
 
+const comments = [
+  `So long-long story, boring!`,
+  `good`,
+  `bad`,
+  `norm`,
+  `shit`,
+  `fine`,
+  `any`,
+  `soo`,
+  `very bad`,
+  `very good`,
+  `beautiful`,
+  `amazing`,
+  `like`,
+  `no look`,
+  `no smile`,
+  `funny`,
+  `recommended`,
+  `my favorite`,
+  `what is that?`
+];
+
+function createCommentInfo() {
+  return {
+    emoji: `😐`,
+    text: getRandomElements(comments, 1)[0],
+    author: `Mark Dacascas`,
+    day: getRandomInteger(1, 20)
+  };
+}
+
 function createFilmCard() {
   return {
     title: getRandomElements(titles, 1)[0],
@@ -86,12 +117,17 @@ function createFilmCard() {
     description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
     ageLimit: getRandomInteger(12, 18),
     src: getRandomElements(images, 1)[0],
-    comments: getRandomInteger(1, 20),
+    comments: getRandomLengthArray(createCommentInfo, getRandomInteger(1, comments.length)),
     actors: getRandomElements(actors, getRandomInteger(1, 3)).join(` `),
-    rate: getRandomArbitary(3, 9),
+    rate: 0,
+    categories: {
+      watchlist: false,
+      watched: false,
+      favorite: false
+    },
     releaseDate: 2019,
     country: `USA`
   };
 }
 
-export const FilmsData = getArrayCards(createFilmCard, 12);
+export const FilmsData = getRandomLengthArray(createFilmCard, 12);

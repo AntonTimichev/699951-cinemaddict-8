@@ -1,17 +1,22 @@
+import {createCommentItemTemplate} from "./create-comment-Item-template";
+import {createControlsTemplate} from "./create-controls-template";
+import {createRatingTemplate} from "./create-rating-template";
+
 export function createPopupTemplate(data) {
   const {
     title,
     rating,
     info,
     src,
-    originTitle,
+    originTitle = title,
     actors,
     ageLimit,
     releaseDate,
     rate,
     country,
     description,
-    comments
+    comments,
+    categories
   } = data;
 
   return `<section class="film-details">
@@ -80,30 +85,14 @@ export function createPopupTemplate(data) {
     </div>
 
     <section class="film-details__controls">
-      <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
-      <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
-
-      <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" checked>
-      <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
-
-      <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
-      <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
+      ${(Array.from(Object.entries(categories)).map((control) => createControlsTemplate(control))).join(`\n`)}
     </section>
 
     <section class="film-details__comments-wrap">
-      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments}</span></h3>
+      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
       <ul class="film-details__comments-list">
-        <li class="film-details__comment">
-          <span class="film-details__comment-emoji">😴</span>
-          <div>
-            <p class="film-details__comment-text">So long-long story, boring!</p>
-            <p class="film-details__comment-info">
-              <span class="film-details__comment-author">Tim Macoveev</span>
-              <span class="film-details__comment-day">3 days ago</span>
-            </p>
-          </div>
-        </li>
+        ${(Array.from(comments).map((comment) => createCommentItemTemplate(comment))).join(`\n`)}
       </ul>
 
       <div class="film-details__new-comment">
@@ -115,7 +104,7 @@ export function createPopupTemplate(data) {
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
             <label class="film-details__emoji-label" for="emoji-sleeping">😴</label>
 
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-neutral-face" value="neutral-face" checked>
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-neutral-face" value="neutral-face">
             <label class="film-details__emoji-label" for="emoji-neutral-face">😐</label>
 
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-grinning" value="grinning">
@@ -136,42 +125,16 @@ export function createPopupTemplate(data) {
 
       <div class="film-details__user-score">
         <div class="film-details__user-rating-poster">
-          <img src="images/posters/blackmail.jpg" alt="film-poster" class="film-details__user-rating-img">
+          <img src="${src}" alt="film-poster" class="film-details__user-rating-img">
         </div>
 
         <section class="film-details__user-rating-inner">
-          <h3 class="film-details__user-rating-title">Incredibles 2</h3>
+          <h3 class="film-details__user-rating-title">${title}</h3>
 
           <p class="film-details__user-rating-feelings">How you feel it?</p>
 
           <div class="film-details__user-rating-score">
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="1" id="rating-1">
-            <label class="film-details__user-rating-label" for="rating-1">1</label>
-
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="2" id="rating-2">
-            <label class="film-details__user-rating-label" for="rating-2">2</label>
-
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="3" id="rating-3">
-            <label class="film-details__user-rating-label" for="rating-3">3</label>
-
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="4" id="rating-4">
-            <label class="film-details__user-rating-label" for="rating-4">4</label>
-
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5" checked>
-            <label class="film-details__user-rating-label" for="rating-5">5</label>
-
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="6" id="rating-6">
-            <label class="film-details__user-rating-label" for="rating-6">6</label>
-
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="7" id="rating-7">
-            <label class="film-details__user-rating-label" for="rating-7">7</label>
-
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="8" id="rating-8">
-            <label class="film-details__user-rating-label" for="rating-8">8</label>
-
-            <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="9" id="rating-9">
-            <label class="film-details__user-rating-label" for="rating-9">9</label>
-
+          ${(Array.from({length: 9}).map((_, index) => createRatingTemplate(rate, index + 1))).join(`\n`)}
           </div>
         </section>
       </div>

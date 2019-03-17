@@ -9,7 +9,7 @@ function prepareDataForTemplate(data) {
     },
     src = ``,
     description = ``,
-    comments = ``,
+    comments = [],
     controls = true,
     ...settings
   } = data;
@@ -34,7 +34,7 @@ export function createCardTemplate(data) {
     ${createCardInfo(info)}
     <img src=${src} alt="" class="film-card__poster">
     ${description ? `<p class="film-card__description">${description}</p>` : ``}
-    <button class="film-card__comments">${comments} comments</button>
+    <button class="film-card__comments">${comments.length} comments</button>
     
     ${controls ? createCardForm() : ``}
   </article>`;

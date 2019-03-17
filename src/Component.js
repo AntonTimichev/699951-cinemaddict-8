@@ -9,8 +9,22 @@ export class Component {
     this._element = null;
   }
 
+  get element() {
+    return this._element;
+  }
+
   get template() {
     throw new Error(`You have to define template.`);
+  }
+
+  setPrivateProperties(data) {
+    Object.keys(data).forEach((key) => {
+      if (key === `comment`) {
+        this._data.comments.push(data[key]);
+      } else {
+        this._data[`${key}`] = data[key];
+      }
+    });
   }
 
   bind() {}
