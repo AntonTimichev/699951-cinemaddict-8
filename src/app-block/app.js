@@ -27,6 +27,10 @@ export function renderCommentedCards(elements) {
   commentedFilmsContainer.appendChild(elements);
 }
 
+export function refreshCard(newCard, oldCard) {
+  mainFilmsContainer.replaceChild(newCard, oldCard);
+}
+
 export function setAppFilterHandler(callback) {
   filtersContainer.addEventListener(`click`, function (evt) {
     evt.preventDefault();

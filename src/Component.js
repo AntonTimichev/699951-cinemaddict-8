@@ -13,6 +13,15 @@ export class Component {
     throw new Error(`You have to define template.`);
   }
 
+  refresh() {
+    const currentElement = this._element;
+    currentElement.parentElement.replaceChild(this.render(), currentElement);
+  }
+
+  update(data) {
+    this._data = Object.assign({}, this._data, data);
+  }
+
   bind() {}
 
   set onClick(func) {

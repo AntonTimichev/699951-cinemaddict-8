@@ -4,20 +4,20 @@ import {Component} from "../Component";
 export class Card extends Component {
   constructor(data) {
     super(data);
-    this.onClickHandler = this.onClickHandler.bind(this);
+    this.onCommentButtonClick = this.onCommentButtonClick.bind(this);
   }
 
   get template() {
     return createCardTemplate(this._data);
   }
 
-  onClickHandler(evt) {
+  onCommentButtonClick(evt) {
     evt.preventDefault();
     this._onClickHandler(this.getData());
   }
 
   bind() {
-    this._element.querySelector(`.film-card__comments`).addEventListener(`click`, this.onClickHandler);
+    this._element.querySelector(`.film-card__comments`).addEventListener(`click`, this.onCommentButtonClick);
   }
 
   getData() {
