@@ -119,7 +119,6 @@ function createFilmCard() {
     src: getRandomElements(images, 1)[0],
     comments: getRandomLengthArray(createCommentInfo, getRandomInteger(1, comments.length)),
     actors: getRandomElements(actors, getRandomInteger(1, 3)).join(` `),
-    rate: 0,
     categories: {
       watchlist: false,
       watched: false,

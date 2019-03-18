@@ -16,10 +16,6 @@ export class Card extends Component {
     this._onClickHandler(this.getData());
   }
 
-  update(data) {
-    this.setPrivateProperties(data);
-  }
-
   bind() {
     this._element.querySelector(`.film-card__comments`).addEventListener(`click`, this.onCommentButtonClick);
   }

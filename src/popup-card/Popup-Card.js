@@ -10,14 +10,15 @@ export class Popup extends Component {
       isChanged: false
     };
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
+    this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
+    this._onScoreChange = this._onScoreChange.bind(this);
   }
 
   _onCloseButtonClick(evt) {
     evt.preventDefault();
-    const newData = this._getFormField();
     this.unbind();
     if (this._state.isChanged) {
-      this._onSubmit(newData);
+      this._onSubmit(this._data);
     }
     this.close();
   }
@@ -28,29 +29,30 @@ export class Popup extends Component {
 
   _processForm(formData) {
     const entry = {
-      comment: {
-        emoji: ``,
-        text: ``,
-        author: `Roy Roy`,
-        day: 0
-      },
+      comments: this._data.comments,
       categories: {
         watchlist: false,
         watched: false,
         favorite: false
+      },
+      newComment: {
+        emoji: ``,
+        text: ``,
+        author: `Roy Roy`,
+        day: 0
       }
     };
     const cardEditMapper = Popup.createMapper(entry);
     for (const pair of formData.entries()) {
       const [property, value] = pair;
       if (cardEditMapper[property] && value) {
-        this.isChanged();
         cardEditMapper[property](value);
       }
     }
-    if (!entry.comment.text && !entry.comment.emoji) {
-      delete entry.comment;
+    if (entry.newComment.text || entry.newComment.emoji) {
+      entry.comments.push(entry.newComment);
     }
+    delete entry.newComment;
     return entry;
   }
 
@@ -60,7 +62,7 @@ export class Popup extends Component {
         target.rate = value;
       },
       'comment': (value) => {
-        target.comment.text = value;
+        target.newComment.text = value;
       },
       'watchlist': (value) => {
         target.categories.watchlist = (value === `on`);
@@ -72,12 +74,12 @@ export class Popup extends Component {
         target.categories.favorite = (value === `on`);
       },
       'comment-emoji': (value) => {
-        target.comment.emoji = EmojiOfComment[value];
+        target.newComment.emoji = EmojiOfComment[value];
       }
     };
   }
 
-  isChanged() {
+  _setAsChanged() {
     this._state.isChanged = true;
   }
 
@@ -85,7 +87,7 @@ export class Popup extends Component {
     return this._data.comments;
   }
 
-  _getFormField() {
+  _getFormFields() {
     const formData = new FormData(this._element.querySelector(`.film-details__inner`));
     return this._processForm(formData);
   }
@@ -93,6 +95,33 @@ export class Popup extends Component {
   bind() {
     this._closeBtn = this._element.querySelector(`.film-details__close-btn`);
     this._closeBtn.addEventListener(`click`, this._onCloseButtonClick);
+    document.addEventListener(`keydown`, this._onDocumentKeyDown);
+    this._scoreElement = this._element.querySelector(`.film-details__user-rating-score`);
+    this._scoreElement.addEventListener(`change`, this._onScoreChange);
+  }
+
+  _onScoreChange(evt) {
+    const inputScore = evt.target.closest(`.film-details__user-rating-input`);
+    if (inputScore) {
+      this._updateHandler();
+    }
+  }
+
+  _onDocumentKeyDown(evt) {
+    if (evt.which === 13 && evt.ctrlKey) {
+      const text = this._element.querySelector(`.film-details__comment-input`).value;
+      const emoji = this._element.querySelector(`.film-details__emoji-item:checked`);
+      if (text || emoji) {
+        this._updateHandler();
+      }
+    }
+  }
+
+  _updateHandler() {
+    const newData = this._getFormFields();
+    this.update(newData);
+    this._setAsChanged();
+    this.refresh();
   }
 
   close() {
@@ -104,6 +133,9 @@ export class Popup extends Component {
   unbind() {
     this._closeBtn.removeEventListener(`click`, this._onCloseButtonClick);
     this._closeBtn = null;
+    document.removeEventListener(`keydown`, this._onDocumentKeyDown);
+    this._scoreElement.removeEventListener(`change`, this._onScoreChange);
+    this._scoreElement = null;
   }
 
   get template() {

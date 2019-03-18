@@ -8,11 +8,10 @@ const body = document.querySelector(`body`);
 const getInstances = (data) => data.map((info) => {
   const card = new Card(info);
   card.onClick = (copyData) => {
-    const currentCard = card.element;
     const popup = new Popup(copyData);
     popup.onSubmit = (newObject) => {
       card.update(newObject);
-      refreshCard(card.render(), currentCard);
+      card.refresh();
     };
     body.appendChild(popup.render());
   };

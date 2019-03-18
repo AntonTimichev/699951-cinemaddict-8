@@ -12,7 +12,7 @@ export function createPopupTemplate(data) {
     actors,
     ageLimit,
     releaseDate,
-    rate,
+    rate = 0,
     country,
     description,
     comments,
