@@ -29,13 +29,13 @@ const titles = [
 ];
 
 const genres = [
-  `detective`,
-  `comedy`,
-  `drama`,
-  `criminal`,
-  `triller`,
-  `amine`,
-  `action`
+  `Detective`,
+  `Comedy`,
+  `Drama`,
+  `Criminal`,
+  `Triller`,
+  `Amine`,
+  `Action`
 ];
 
 const images = [
@@ -111,7 +111,7 @@ function createFilmCard() {
     comments: sortByTimeComment(getRandomLengthArray(createCommentInfo, getRandomInteger(1, comments.length))),
     actors: getRandomElements(actors, getRandomInteger(1, 3)).join(` `),
     watchlist: false,
-    watched: false,
+    watched: true,
     favorite: false,
     releaseTime: year + (1000 * 60 * 60 * getRandomInteger(1, 24) * 366),
     country: `USA`,

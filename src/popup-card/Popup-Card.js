@@ -1,6 +1,6 @@
 import {createPopupTemplate} from './create-popup-template';
 import {createUserRatingTemplate} from "./create-user-rating-template";
-import {createCommentItemTemplate} from "./create-comment-Item-template";
+import {createCommentItemTemplate} from "./create-comment-item-template";
 import {createElement} from "../utils";
 import {Component} from "../Component";
 import {EmojiOfComment} from "../enums";
@@ -47,7 +47,10 @@ export class Popup extends Component {
         cardEditMapper[property](value);
       }
     }
-    if (entry.newComment.text || entry.newComment.emoji) {
+    if (entry.newComment.emoji) {
+      entry.comments.push(entry.newComment);
+    } else if (entry.newComment.text) {
+      entry.newComment.emoji = `😐`;
       entry.comments.push(entry.newComment);
     }
     delete entry.newComment;
@@ -104,7 +107,9 @@ export class Popup extends Component {
       if (textField.value || emoji) {
         this._updateHandler();
         textField.value = ``;
-        emoji.checked = false;
+        if (emoji) {
+          emoji.checked = false;
+        }
       }
     }
   }

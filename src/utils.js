@@ -39,10 +39,6 @@ export function createElement(html) {
   return container.content;
 }
 
-export function capitalizeFirstLetter(id) {
-  return `${id[0].toUpperCase()}${id.slice(1)}`;
-}
-
 export function getCardsDataForContainers(data) {
   return [data.slice(), sortByRating(data).slice(0, 2), sortByComments(data).slice(0, 2)];
 }

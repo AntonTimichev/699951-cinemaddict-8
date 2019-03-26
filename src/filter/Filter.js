@@ -10,8 +10,7 @@ export class Filter extends Component {
 
   _onFilterButtonClick(evt) {
     evt.preventDefault();
-    const newObj = this._onFilter(this._element, this._data.id);
-    this.update(newObj);
+    this._onFilter(this._element, this._data.id);
   }
 
   rerender() {

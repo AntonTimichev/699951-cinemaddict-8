@@ -1,4 +1,4 @@
-import {createCommentItemTemplate} from "./create-comment-Item-template";
+import {createCommentItemTemplate} from "./create-comment-item-template";
 import {createRatingTemplate} from "./create-rating-template";
 import {createUserRatingTemplate} from "./create-user-rating-template";
 import moment from 'moment';
@@ -78,9 +78,7 @@ export function createPopupTemplate(data) {
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">${info.genre}</span>
-              <span class="film-details__genre">Action</span>
-              <span class="film-details__genre">Adventure</span></td>
+              <span class="film-details__genre">${info.genre}</span></td>
           </tr>
         </table>
 

@@ -1,4 +1,5 @@
 import moment from 'moment';
+import {createFormControlsOfCard} from "./create-form-controls-of-card";
 
 function prepareDataForTemplate(data) {
   const {
@@ -29,7 +30,7 @@ function prepareDataForTemplate(data) {
 }
 
 export function createCardTemplate(data) {
-  const {title, rating, src, description = false, comments, controls, info} = prepareDataForTemplate(data);
+  const {title, rating, src, description = false, comments, controls, info, watchlist, watched, favorite} = prepareDataForTemplate(data);
   return `<article class="film-card ${!controls ? `film-card--no-controls` : ``}">
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${rating}</p>
@@ -38,7 +39,7 @@ export function createCardTemplate(data) {
     ${description ? `<p class="film-card__description">${description}</p>` : ``}
     <button class="film-card__comments">${comments.length} comments</button>
     
-    ${controls ? createFormofCardControls() : ``}
+    ${createFormControlsOfCard(watchlist, watched, favorite)}
   </article>`;
 }
 
@@ -51,12 +52,4 @@ function createCardInfo(infoData) {
     <span class="film-card__duration">${runTime}m</span>
     <span class="film-card__genre">${genre}</span>
   </p>`;
-}
-
-function createFormofCardControls() {
-  return `<form class="film-card__controls">
-    <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-    <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-    <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
-  </form>`;
 }
