@@ -7,14 +7,17 @@ import {filmsData} from "../mok-data";
 import {cloneDeep} from 'lodash';
 import {Statistic} from "../statistic/Statistic";
 
+let state = {
+  isChanged: false
+};
 let main = null;
 let filtersContainer = null;
 let mainFilmsContainer = null;
 let topFilmsContainer = null;
 let commentedFilmsContainer = null;
 let activeFilterButton = null;
-let appElement = null;
-let statsElement = null;
+let filmsSection = null;
+let statistic = null;
 
 function createAppElement() {
   const template = createAppTemplate();
@@ -63,11 +66,14 @@ function changeFilterValueForCards(filterId) {
       hideStatistic();
       break;
     case `stats`:
-      const statistic = new Statistic(cloneDeep(mainCardsData));
-      statsElement = statistic.render();
+      if (state.isChanged) {
+        statistic.data = mainCardsData;
+      }
+      statistic.render();
       statistic.showDiagram();
-      main.appendChild(statsElement);
-      appElement.classList.add(`visually-hidden`);
+      main.appendChild(statistic.element);
+      filmsSection.classList.add(`visually-hidden`);
+      statistic.element.classList.remove(`visually-hidden`);
       return;
     default: hideStatistic();
       break;
@@ -76,9 +82,9 @@ function changeFilterValueForCards(filterId) {
 }
 
 function hideStatistic() {
-  if (appElement.classList.contains(`visually-hidden`)) {
-    appElement.classList.remove(`visually-hidden`);
-    statsElement.classList.add(`visually-hidden`);
+  if (filmsSection.classList.contains(`visually-hidden`)) {
+    filmsSection.classList.remove(`visually-hidden`);
+    statistic.element.classList.add(`visually-hidden`);
   }
 }
 
@@ -96,6 +102,7 @@ const filtersInstances = FiltersSettings.map((info) => {
 });
 
 function updateInitialData(data, cards) {
+  state.isChanged = true;
   const index = cards.findIndex((card) => card.id === data.id);
   if (index !== -1) {
     cards[index] = cloneDeep(data);
@@ -110,12 +117,7 @@ const getInstancesOfCards = (data) => data.map((info) => {
       card.update(newObject);
       card.rerender();
       updateInitialData(card.data, filmsData);
-      const categories = Array.of(`watchlist`, `history`);
-      categories.forEach((category) => {
-        if (category) {
-          processFilter(category);
-        }
-      });
+      processFilter(`watchlist`, `history`);
     };
     document.body.appendChild(popup.render());
   };
@@ -132,13 +134,15 @@ const getInstancesOfCards = (data) => data.map((info) => {
   return card;
 });
 
-function processFilter(filterId) {
-  const filterInstance = filtersInstances.find((filterInst) => filterInst._data.id === filterId);
-  if (filterId === `history`) {
-    filterId = `watched`;
-  }
-  filterInstance.update({count: filmsData.filter((item) => item[filterId]).length});
-  filterInstance.rerender();
+function processFilter(...filtersId) {
+  filtersId.forEach((filterId) => {
+    const filterInstance = filtersInstances.find((filterInst) => filterInst._data.id === filterId);
+    if (filterId === `history`) {
+      filterId = `watched`;
+    }
+    filterInstance.update({count: filmsData.filter((item) => item[filterId]).length});
+    filterInstance.rerender();
+  });
 }
 
 export function renderMainCards(data) {
@@ -169,6 +173,7 @@ export function renderFilters(elements) {
 
 export function initFilters() {
   renderFilters(createFragment(getElementsOfInstances(filtersInstances)));
+  processFilter(`watchlist`, `history`);
   activeFilterButton = filtersContainer.querySelector(`.main-navigation__item--active`);
 }
 
@@ -180,13 +185,14 @@ function getFilteredCardsData(cardsData, id) {
 
 export function initApp(container) {
   main = container;
-  container.innerHTML = ``;
-  appElement = createAppElement();
+  main.innerHTML = ``;
+  const appElement = createAppElement();
   filtersContainer = appElement.querySelector(`.main-navigation`);
   mainFilmsContainer = appElement.querySelector(`.films-list .films-list__container`);
   topFilmsContainer = appElement.querySelector(`.films-list--extra:nth-last-child(2) .films-list__container`);
   commentedFilmsContainer = appElement.querySelector(`.films-list--extra:last-child .films-list__container`);
-  container.appendChild(appElement);
+  filmsSection = appElement.querySelector(`.films`);
+  main.appendChild(appElement);
   initFilters();
-  appElement = document.querySelector(`.films`);
+  statistic = new Statistic(cloneDeep(mainCardsData));
 }

@@ -17,6 +17,10 @@ export class Component {
     this._data = Object.assign({}, this._data, data);
   }
 
+  get element() {
+    return this._element;
+  }
+
   bind() {}
 
   set onClick(func) {

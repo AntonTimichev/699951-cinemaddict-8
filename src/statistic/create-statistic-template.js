@@ -5,7 +5,7 @@ export function createStatisticTemplate(data) {
   const totalHours = moment.duration(totalDuration).get(`hours`);
   const totalMinutes = moment.duration(totalDuration).get(`minutes`);
 
-  return `<section class="statistic">
+  return `<section class="statistic visually-hidden">
     <p class="statistic__rank">Your rank <span class="statistic__rank-label">${canvas.nameOfGenres[0]}-man</span></p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">

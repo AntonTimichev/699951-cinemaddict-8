@@ -6,10 +6,10 @@ import {createStatisticTemplate} from "./create-statistic-template";
 export class Statistic extends Component {
   constructor(data) {
     super(data);
-    this._statistic = {};
   }
 
   _calculateStatistic() {
+    this._statistic = {};
     let totalDuration = 0;
     let watchedCount = 0;
     this._data.forEach((card) => {
@@ -27,6 +27,10 @@ export class Statistic extends Component {
     this._statistic.totalDuration = totalDuration;
     this._statistic.watchedCount = watchedCount;
     return this._statistic;
+  }
+
+  set data(value) {
+    this._data = value;
   }
 
   _getStatsForCanvas(data) {
