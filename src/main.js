@@ -1,35 +1,11 @@
-import {Card} from './card/Card';
-import {Popup} from "./popup-card/Popup-Card";
-import {renderMainCards, renderTopCards, renderCommentedCards, setAppFilterHandler, initApp, refreshCard} from "./app-block/app";
-import {FilmsData} from './mok-data';
-import {getCardsDataForContainers, getRandomInteger, createFragment} from "./utils";
+import {renderMainCards, renderTopCards, renderCommentedCards, initApp} from "./app-block/app";
+import {filmsData} from './mok-data';
+import {getCardsDataForContainers} from "./utils";
 
-const body = document.querySelector(`body`);
-const getInstances = (data) => data.map((info) => {
-  const card = new Card(info);
-  card.onClick = (copyData) => {
-    const popup = new Popup(copyData);
-    popup.onSubmit = (newObject) => {
-      card.update(newObject);
-      card.refresh();
-    };
-    body.appendChild(popup.render());
-  };
-  return card;
-});
-const getElementsOfInstances = (instances) => instances.map((instance) => instance.render());
-const {main: mainCards, top: topCards, commented: commentedCards} = getCardsDataForContainers(FilmsData.slice());
-const mainInstances = getInstances(mainCards);
-const topInstances = getInstances(topCards);
-const commentedInstances = getInstances(commentedCards);
+const [mainCards, topCards, commentedCards] = getCardsDataForContainers(filmsData);
 
 initApp(document.querySelector(`main`));
-renderMainCards(createFragment(getElementsOfInstances(mainInstances)));
-renderTopCards(createFragment(getElementsOfInstances(topInstances)));
-renderCommentedCards(createFragment(getElementsOfInstances(commentedInstances)));
-setAppFilterHandler(changeFilterValueHandler);
 
-function changeFilterValueHandler() {
-  const data = mainInstances.slice(getRandomInteger(1, mainInstances.length - 1));
-  renderMainCards(createFragment(getElementsOfInstances(data)));
-}
+renderMainCards(mainCards);
+renderTopCards(topCards);
+renderCommentedCards(commentedCards);

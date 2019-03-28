@@ -1,6 +1,7 @@
-import {createCommentItemTemplate} from "./create-comment-Item-template";
-import {createControlsTemplate} from "./create-controls-template";
+import {createCommentItemTemplate} from "./create-comment-item-template";
 import {createRatingTemplate} from "./create-rating-template";
+import {createUserRatingTemplate} from "./create-user-rating-template";
+import moment from 'moment';
 
 export function createPopupTemplate(data) {
   const {
@@ -11,13 +12,18 @@ export function createPopupTemplate(data) {
     originTitle = title,
     actors,
     ageLimit,
-    releaseDate,
+    releaseTime,
     rate = 0,
     country,
     description,
     comments,
-    categories
+    watchlist,
+    watched,
+    favorite,
   } = data;
+
+  const releaseDate = moment(releaseTime).format(`DD MMMM YYYY`);
+  const runTime = `${moment.duration(info.duration).get(`hours`)}h ${moment.duration(info.duration).get(`minutes`)}m`;
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -40,7 +46,7 @@ export function createPopupTemplate(data) {
 
           <div class="film-details__rating">
             <p class="film-details__total-rating">${rating}</p>
-            <p class="film-details__user-rating">Your rate ${rate}</p>
+            ${createUserRatingTemplate(rate)}
           </div>
         </div>
 
@@ -63,7 +69,7 @@ export function createPopupTemplate(data) {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">${info.duration}</td>
+            <td class="film-details__cell">${runTime}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
@@ -72,9 +78,7 @@ export function createPopupTemplate(data) {
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">${info.genre}</span>
-              <span class="film-details__genre">Action</span>
-              <span class="film-details__genre">Adventure</span></td>
+              <span class="film-details__genre">${info.genre}</span></td>
           </tr>
         </table>
 
@@ -85,7 +89,14 @@ export function createPopupTemplate(data) {
     </div>
 
     <section class="film-details__controls">
-      ${(Array.from(Object.entries(categories)).map((control) => createControlsTemplate(control))).join(`\n`)}
+      <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${watchlist ? `checked` : ``}>
+      <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+
+      <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${watched ? `checked` : ``}>
+      <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
+
+      <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${favorite ? `checked` : ``}>
+      <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
     </section>
 
     <section class="film-details__comments-wrap">

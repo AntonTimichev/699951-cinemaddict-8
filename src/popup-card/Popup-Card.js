@@ -1,4 +1,7 @@
 import {createPopupTemplate} from './create-popup-template';
+import {createUserRatingTemplate} from "./create-user-rating-template";
+import {createCommentItemTemplate} from "./create-comment-item-template";
+import {createElement} from "../utils";
 import {Component} from "../Component";
 import {EmojiOfComment} from "../enums";
 
@@ -6,9 +9,6 @@ export class Popup extends Component {
   constructor(data) {
     super(data);
     this._closeBtn = null;
-    this._state = {
-      isChanged: false
-    };
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
     this._onScoreChange = this._onScoreChange.bind(this);
@@ -16,10 +16,9 @@ export class Popup extends Component {
 
   _onCloseButtonClick(evt) {
     evt.preventDefault();
+    const newData = this._getFormFields();
     this.unbind();
-    if (this._state.isChanged) {
-      this._onSubmit(this._data);
-    }
+    this._onSubmit(newData);
     this.close();
   }
 
@@ -29,18 +28,17 @@ export class Popup extends Component {
 
   _processForm(formData) {
     const entry = {
-      comments: this._data.comments,
-      categories: {
-        watchlist: false,
-        watched: false,
-        favorite: false
-      },
+      comments: [...this._data.comments],
+      watchlist: false,
+      watched: false,
+      favorite: false,
       newComment: {
         emoji: ``,
         text: ``,
         author: `Roy Roy`,
-        day: 0
-      }
+        day: Date.now()
+      },
+      rate: parseInt(this._data.rate, 10) || 0
     };
     const cardEditMapper = Popup.createMapper(entry);
     for (const pair of formData.entries()) {
@@ -49,7 +47,10 @@ export class Popup extends Component {
         cardEditMapper[property](value);
       }
     }
-    if (entry.newComment.text || entry.newComment.emoji) {
+    if (entry.newComment.emoji) {
+      entry.comments.push(entry.newComment);
+    } else if (entry.newComment.text) {
+      entry.newComment.emoji = `😐`;
       entry.comments.push(entry.newComment);
     }
     delete entry.newComment;
@@ -59,32 +60,24 @@ export class Popup extends Component {
   static createMapper(target) {
     return {
       'score': (value) => {
-        target.rate = value;
+        target.rate = parseInt(value, 10);
       },
       'comment': (value) => {
         target.newComment.text = value;
       },
       'watchlist': (value) => {
-        target.categories.watchlist = (value === `on`);
+        target.watchlist = (value === `on`);
       },
       'watched': (value) => {
-        target.categories.watched = (value === `on`);
+        target.watched = (value === `on`);
       },
       'favorite': (value) => {
-        target.categories.favorite = (value === `on`);
+        target.favorite = (value === `on`);
       },
       'comment-emoji': (value) => {
         target.newComment.emoji = EmojiOfComment[value];
       }
     };
-  }
-
-  _setAsChanged() {
-    this._state.isChanged = true;
-  }
-
-  get comments() {
-    return this._data.comments;
   }
 
   _getFormFields() {
@@ -109,19 +102,46 @@ export class Popup extends Component {
 
   _onDocumentKeyDown(evt) {
     if (evt.which === 13 && evt.ctrlKey) {
-      const text = this._element.querySelector(`.film-details__comment-input`).value;
+      const textField = this._element.querySelector(`.film-details__comment-input`);
       const emoji = this._element.querySelector(`.film-details__emoji-item:checked`);
-      if (text || emoji) {
+      if (textField.value || emoji) {
         this._updateHandler();
+        textField.value = ``;
+        if (emoji) {
+          emoji.checked = false;
+        }
       }
     }
   }
 
   _updateHandler() {
+    const {comments, rate} = this._data;
     const newData = this._getFormFields();
     this.update(newData);
-    this._setAsChanged();
-    this.refresh();
+    if (comments.length < this._data.comments.length) {
+      this._rerenderCommentField();
+    }
+    if (rate !== this._data.rate) {
+      this._rerenderRateField();
+    }
+  }
+
+  _rerenderCommentField() {
+    if (!this._commentContainer) {
+      this._commentContainer = this._element.querySelector(`.film-details__comments-list`);
+    }
+    if (!this._countField) {
+      this._countField = this._element.querySelector(`.film-details__comments-count`);
+    }
+    this._countField.innerText = this._data.comments.length;
+    this._commentContainer.appendChild(createElement(createCommentItemTemplate(this._data.comments[this._data.comments.length - 1])));
+  }
+
+  _rerenderRateField() {
+    if (!this._ratingContainer) {
+      this._ratingContainer = this._element.querySelector(`.film-details__rating`);
+    }
+    this._ratingContainer.replaceChild(createElement(createUserRatingTemplate(this._data.rate)), this._ratingContainer.lastElementChild);
   }
 
   close() {

@@ -1,4 +1,4 @@
-import {getRandomElements, getRandomInteger, getRandomArbitary, getRandomLengthArray} from "./utils";
+import {getRandomElements, getRandomInteger, getRandomArbitary, getRandomLengthArray, sortByTimeComment} from "./utils";
 
 const descElements = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -28,26 +28,14 @@ const titles = [
   `Incredibles 2`
 ];
 
-const runtimes = [
-  `1h 13m`,
-  `2h 50m`,
-  `1h 46m`,
-  `34m`,
-  `1h 22m`,
-  `1h 19m`,
-  `59m`,
-  `1h 17m`,
-  `1h 57m`
-];
-
 const genres = [
-  `detective`,
-  `comedy`,
-  `drama`,
-  `criminal`,
-  `triller`,
-  `amine`,
-  `action`
+  `Detective`,
+  `Comedy`,
+  `Drama`,
+  `Criminal`,
+  `Triller`,
+  `Amine`,
+  `Action`
 ];
 
 const images = [
@@ -101,32 +89,34 @@ function createCommentInfo() {
     emoji: `😐`,
     text: getRandomElements(comments, 1)[0],
     author: `Mark Dacascas`,
-    day: getRandomInteger(1, 20)
+    day: Date.now() - (1000 * 60 * getRandomInteger(1, 60))
   };
 }
 
 function createFilmCard() {
+  const year = Date.now() - ((1000 * 60 * 60 * getRandomInteger(1, 24) * 366) * getRandomInteger(1, 10));
+  const duration = (1000 * 60 * getRandomInteger(80, 100));
   return {
+    id: Math.random().toString().slice(2, 7),
     title: getRandomElements(titles, 1)[0],
     rating: getRandomArbitary(6, 10),
     info: {
-      timestamp: Date.now() - ((1000 * 60 * 60 * 24 * 366) * getRandomInteger(1, 10)),
-      duration: getRandomElements(runtimes, 1)[0],
+      yearTime: year,
+      duration,
       genre: getRandomElements(genres, 1)[0],
     },
     description: getRandomElements(descElements, getRandomInteger(1, 3)).join(` `),
     ageLimit: getRandomInteger(12, 18),
     src: getRandomElements(images, 1)[0],
-    comments: getRandomLengthArray(createCommentInfo, getRandomInteger(1, comments.length)),
+    comments: sortByTimeComment(getRandomLengthArray(createCommentInfo, getRandomInteger(1, comments.length))),
     actors: getRandomElements(actors, getRandomInteger(1, 3)).join(` `),
-    categories: {
-      watchlist: false,
-      watched: false,
-      favorite: false
-    },
-    releaseDate: 2019,
-    country: `USA`
+    watchlist: false,
+    watched: true,
+    favorite: false,
+    releaseTime: year + (1000 * 60 * 60 * getRandomInteger(1, 24) * 366),
+    country: `USA`,
+    rate: 0
   };
 }
 
-export const FilmsData = getRandomLengthArray(createFilmCard, 12);
+export const filmsData = getRandomLengthArray(createFilmCard, 12);

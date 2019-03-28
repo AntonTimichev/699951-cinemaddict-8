@@ -10,6 +10,12 @@ function sortByRating(data) {
   });
 }
 
+export function sortByTimeComment(data) {
+  return data.sort((a, b) => {
+    return a.day - b.day;
+  });
+}
+
 export function getRandomArbitary(min, max) {
   return (Math.random() * (max - min) + min).toFixed(1);
 }
@@ -33,16 +39,8 @@ export function createElement(html) {
   return container.content;
 }
 
-export function capitalizeFirstLetter(id) {
-  return `${id[0].toUpperCase()}${id.slice(1)}`;
-}
-
 export function getCardsDataForContainers(data) {
-  return {
-    main: data.slice(),
-    top: sortByRating(data).slice(0, 2),
-    commented: sortByComments(data).slice(0, 2)
-  };
+  return [data.slice(), sortByRating(data).slice(0, 2), sortByComments(data).slice(0, 2)];
 }
 
 export function createFragment(elements) {
@@ -54,3 +52,5 @@ export function createFragment(elements) {
 export function getRandomLengthArray(fn, amount) {
   return Array.from({length: amount}, () => fn());
 }
+
+export const getElementsOfInstances = (instances) => instances.map((instance) => instance.render());
