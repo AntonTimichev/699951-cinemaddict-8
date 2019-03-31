@@ -1,15 +1,17 @@
 import {createAppTemplate} from "./templates/index";
-import {createElement, createFragment, getElementsOfInstances} from "../utils";
+import {createElement, createFragment, getCardsDataForContainers, getElementsOfInstances} from "../utils";
 import {Card} from "../card/Card";
 import {Popup} from "../popup-card/Popup-Card";
 import {Filter} from "../filter/FIlter";
-import {filmsData} from "../mok-data";
 import {cloneDeep} from 'lodash';
 import {Statistic} from "../statistic/Statistic";
+import {API} from "../Api";
 
 let state = {
   isChanged: false
 };
+let api = null;
+let moviesData = null;
 let main = null;
 let filtersContainer = null;
 let mainFilmsContainer = null;
@@ -52,17 +54,17 @@ export const FiltersSettings = [
   },
 ];
 
-let mainCardsData = filmsData;
+let mainCardsData = moviesData;
 
 function changeFilterValueForCards(filterId) {
-  mainCardsData = filmsData;
+  mainCardsData = moviesData;
   if (filterId === `history`) {
     filterId = `watched`;
   }
   switch (filterId) {
     case `watchlist`:
     case `favorite`:
-    case `watched` : mainCardsData = getFilteredCardsData(filmsData, filterId);
+    case `watched` : mainCardsData = getFilteredCardsData(moviesData, filterId);
       hideStatistic();
       break;
     case `stats`:
@@ -113,22 +115,23 @@ const getInstancesOfCards = (data) => data.map((info) => {
   const card = new Card(cloneDeep(info));
   card.onClick = (copyData) => {
     const popup = new Popup(copyData);
+    popup.updateServer = api.updateMovie.bind(api);
     popup.onSubmit = (newObject) => {
       card.update(newObject);
       card.rerender();
-      updateInitialData(card.data, filmsData);
+      updateInitialData(card.data, moviesData);
       processFilter(`watchlist`, `history`);
     };
     document.body.appendChild(popup.render());
   };
   card.onAddToWatchList = (cardData) => {
     cardData.watchlist = !cardData.watchlist;
-    updateInitialData(cardData, filmsData);
+    updateInitialData(cardData, moviesData);
     processFilter(`watchlist`);
   };
   card.onMarkAsWatched = (cardData) => {
     cardData.watched = !cardData.watched;
-    updateInitialData(cardData, filmsData);
+    updateInitialData(cardData, moviesData);
     processFilter(`history`);
   };
   return card;
@@ -140,7 +143,7 @@ function processFilter(...filtersId) {
     if (filterId === `history`) {
       filterId = `watched`;
     }
-    filterInstance.update({count: filmsData.filter((item) => item[filterId]).length});
+    filterInstance.update({count: moviesData.filter((item) => item[filterId]).length});
     filterInstance.rerender();
   });
 }
@@ -183,16 +186,27 @@ function getFilteredCardsData(cardsData, id) {
   });
 }
 
-export function initApp(container) {
+export function initApp({endPoint, authorization}, container) {
   main = container;
-  main.innerHTML = ``;
-  const appElement = createAppElement();
-  filtersContainer = appElement.querySelector(`.main-navigation`);
-  mainFilmsContainer = appElement.querySelector(`.films-list .films-list__container`);
-  topFilmsContainer = appElement.querySelector(`.films-list--extra:nth-last-child(2) .films-list__container`);
-  commentedFilmsContainer = appElement.querySelector(`.films-list--extra:last-child .films-list__container`);
-  filmsSection = appElement.querySelector(`.films`);
-  main.appendChild(appElement);
-  initFilters();
-  statistic = new Statistic(cloneDeep(mainCardsData));
+  api = new API({endPoint, authorization});
+  api.getMovies()
+    .then((movies) => {
+      moviesData = movies;
+      const [mainCards, topCards, commentedCards] = getCardsDataForContainers(moviesData);
+      const appElement = createAppElement();
+      filtersContainer = appElement.querySelector(`.main-navigation`);
+      mainFilmsContainer = appElement.querySelector(`.films-list .films-list__container`);
+      topFilmsContainer = appElement.querySelector(`.films-list--extra:nth-last-child(2) .films-list__container`);
+      commentedFilmsContainer = appElement.querySelector(`.films-list--extra:last-child .films-list__container`);
+      filmsSection = appElement.querySelector(`.films`);
+      main.innerHTML = ``;
+      main.appendChild(appElement);
+      initFilters();
+      statistic = new Statistic(cloneDeep(moviesData));
+      renderMainCards(mainCards);
+      renderTopCards(topCards);
+      renderCommentedCards(commentedCards);
+    }).catch(() => {
+      main.querySelector(`.modal_container`).innerText = `Something went wrong while loading movies. Check your connection or try again later`;
+    });
 }

@@ -1,11 +1,7 @@
-import {renderMainCards, renderTopCards, renderCommentedCards, initApp} from "./app-block/app";
-import {filmsData} from './mok-data';
-import {getCardsDataForContainers} from "./utils";
+import {initApp} from "./app-block/app";
 
-const [mainCards, topCards, commentedCards] = getCardsDataForContainers(filmsData);
 
-initApp(document.querySelector(`main`));
+const AUTHORIZATION = `Basic fk49g38g0j48433fk3v055k30v`;
+const END_POINT = `https://es8-demo-srv.appspot.com/moowle/`;
 
-renderMainCards(mainCards);
-renderTopCards(topCards);
-renderCommentedCards(commentedCards);
+initApp({endPoint: END_POINT, authorization: AUTHORIZATION}, document.querySelector(`main`));

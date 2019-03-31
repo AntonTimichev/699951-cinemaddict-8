@@ -13,13 +13,16 @@ export class Statistic extends Component {
     let totalDuration = 0;
     let watchedCount = 0;
     this._data.forEach((card) => {
+      const {genres, duration} = card.info;
       if (card.watched) {
-        if (!this._statistic[card.info.genre]) {
-          this._statistic[card.info.genre] = 1;
-        } else {
-          this._statistic[card.info.genre] += 1;
-        }
-        totalDuration += card.info.duration;
+        genres.forEach((genre) => {
+          if (!this._statistic[genre]) {
+            this._statistic[genre] = 1;
+          } else {
+            this._statistic[genre] += 1;
+          }
+        });
+        totalDuration += parseInt(duration, 10);
         watchedCount += 1;
       }
     });

@@ -12,7 +12,7 @@ function sortByRating(data) {
 
 export function sortByTimeComment(data) {
   return data.sort((a, b) => {
-    return a.day - b.day;
+    return a.date - b.date;
   });
 }
 

@@ -6,9 +6,9 @@ function prepareDataForTemplate(data) {
     title = ``,
     rating = ``,
     info = {
-      year: ``,
+      releaseTime: ``,
       duration: ``,
-      genre: ``
+      genres: ``
     },
     src = ``,
     description = ``,
@@ -44,12 +44,11 @@ export function createCardTemplate(data) {
 }
 
 function createCardInfo(infoData) {
-  const {yearTime, duration, genre} = infoData;
-  const runTime = moment.duration(duration).asMinutes();
-  const year = moment(yearTime).format(`YYYY`);
+  const {releaseTime, duration, genres} = infoData;
+  const year = moment(releaseTime).format(`YYYY`);
   return `<p class="film-card__info">
     <span class="film-card__year">${year}</span>
-    <span class="film-card__duration">${runTime}m</span>
-    <span class="film-card__genre">${genre}</span>
+    <span class="film-card__duration">${duration}m</span>
+    <span class="film-card__genre">${genres.join(` `)}</span>
   </p>`;
 }

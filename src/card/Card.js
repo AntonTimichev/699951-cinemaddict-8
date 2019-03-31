@@ -1,4 +1,4 @@
-import {createCardTemplate} from './create-template';
+import {createCardTemplate} from './create-card-template';
 import {Component} from "../Component";
 import {cloneDeep} from 'lodash';
 import {createFormControlsOfCard} from "./create-form-controls-of-card";
