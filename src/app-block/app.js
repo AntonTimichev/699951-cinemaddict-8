@@ -3,15 +3,12 @@ import {createElement, createFragment, getCardsDataForContainers, getElementsOfI
 import {Card} from "../card/Card";
 import {Popup} from "../popup-card/Popup-Card";
 import {Filter} from "../filter/FIlter";
-import {cloneDeep} from 'lodash';
 import {Statistic} from "../statistic/Statistic";
 import {API} from "../Api";
+import {LocalModel} from "../LocalModel";
+import {cloneDeep} from 'lodash';
 
-let state = {
-  isChanged: false
-};
 let api = null;
-let moviesData = null;
 let main = null;
 let filtersContainer = null;
 let mainFilmsContainer = null;
@@ -20,13 +17,14 @@ let commentedFilmsContainer = null;
 let activeFilterButton = null;
 let filmsSection = null;
 let statistic = null;
+let localModel = null;
 
 function createAppElement() {
   const template = createAppTemplate();
   return createElement(template);
 }
 
-export const FiltersSettings = [
+const FiltersSettings = [
   {
     id: `all`,
     label: `All movies`,
@@ -54,28 +52,28 @@ export const FiltersSettings = [
   },
 ];
 
-let mainCardsData = moviesData;
+let mainCardsData = null;
 
 function changeFilterValueForCards(filterId) {
-  mainCardsData = moviesData;
+  mainCardsData = localModel.getData;
   if (filterId === `history`) {
     filterId = `watched`;
   }
   switch (filterId) {
     case `watchlist`:
     case `favorite`:
-    case `watched` : mainCardsData = getFilteredCardsData(moviesData, filterId);
+    case `watched` : mainCardsData = getFilteredCardsData(localModel.getData, filterId);
       hideStatistic();
       break;
     case `stats`:
-      if (state.isChanged) {
-        statistic.data = mainCardsData;
+      if (statistic.isChanged) {
+        statistic.update(mainCardsData);
+        statistic.rerender();
+        statistic.showDiagram();
       }
-      statistic.render();
-      statistic.showDiagram();
-      main.appendChild(statistic.element);
       filmsSection.classList.add(`visually-hidden`);
       statistic.element.classList.remove(`visually-hidden`);
+      statistic.isChanged = false;
       return;
     default: hideStatistic();
       break;
@@ -103,47 +101,63 @@ const filtersInstances = FiltersSettings.map((info) => {
   return filter;
 });
 
-function updateInitialData(data, cards) {
-  state.isChanged = true;
-  const index = cards.findIndex((card) => card.id === data.id);
-  if (index !== -1) {
-    cards[index] = cloneDeep(data);
-  }
-}
-
 const getInstancesOfCards = (data) => data.map((info) => {
   const card = new Card(cloneDeep(info));
   card.onClick = (copyData) => {
     const popup = new Popup(copyData);
-    popup.updateServer = api.updateMovie.bind(api);
-    popup.onSubmit = (newObject) => {
-      card.update(newObject);
-      card.rerender();
-      updateInitialData(card.data, moviesData);
-      processFilter(`watchlist`, `history`);
+    popup.onSubmit = (newData) => {
+      api.updateMovie(newData.id, API.toRAW(newData))
+        .then(() => {
+          popup.processResponse();
+          card.update(newData);
+          card.rerender();
+          localModel.updateData(card.data);
+          statistic.isChanged = true;
+          changeFilter(`watchlist`, `history`);
+        })
+        .catch(() => {
+          popup.shakeForm();
+          popup.processResponse(false);
+        });
     };
     document.body.appendChild(popup.render());
   };
   card.onAddToWatchList = (cardData) => {
     cardData.watchlist = !cardData.watchlist;
-    updateInitialData(cardData, moviesData);
-    processFilter(`watchlist`);
+    api.updateMovie(cardData.id, API.toRAW(cardData))
+      .then(() => {
+        card.processResponse();
+        localModel.updateData(cardData);
+        statistic.isChanged = true;
+        changeFilter(`watchlist`);
+      })
+      .catch(() => {
+        card.processResponse(false);
+      });
   };
   card.onMarkAsWatched = (cardData) => {
     cardData.watched = !cardData.watched;
-    updateInitialData(cardData, moviesData);
-    processFilter(`history`);
+    api.updateMovie(cardData.id, API.toRAW(cardData))
+      .then(() => {
+        card.processResponse();
+        localModel.updateData(cardData);
+        statistic.isChanged = true;
+        changeFilter(`history`);
+      })
+      .catch(() => {
+        card.processResponse(false);
+      });
   };
   return card;
 });
 
-function processFilter(...filtersId) {
+function changeFilter(...filtersId) {
   filtersId.forEach((filterId) => {
     const filterInstance = filtersInstances.find((filterInst) => filterInst._data.id === filterId);
     if (filterId === `history`) {
       filterId = `watched`;
     }
-    filterInstance.update({count: moviesData.filter((item) => item[filterId]).length});
+    filterInstance.update({count: localModel.getData.filter((item) => item[filterId]).length});
     filterInstance.rerender();
   });
 }
@@ -176,7 +190,7 @@ export function renderFilters(elements) {
 
 export function initFilters() {
   renderFilters(createFragment(getElementsOfInstances(filtersInstances)));
-  processFilter(`watchlist`, `history`);
+  changeFilter(`watchlist`, `history`);
   activeFilterButton = filtersContainer.querySelector(`.main-navigation__item--active`);
 }
 
@@ -191,8 +205,8 @@ export function initApp({endPoint, authorization}, container) {
   api = new API({endPoint, authorization});
   api.getMovies()
     .then((movies) => {
-      moviesData = movies;
-      const [mainCards, topCards, commentedCards] = getCardsDataForContainers(moviesData);
+      localModel = new LocalModel(movies);
+      const [mainCards, topCards, commentedCards] = getCardsDataForContainers(localModel.getData);
       const appElement = createAppElement();
       filtersContainer = appElement.querySelector(`.main-navigation`);
       mainFilmsContainer = appElement.querySelector(`.films-list .films-list__container`);
@@ -202,11 +216,14 @@ export function initApp({endPoint, authorization}, container) {
       main.innerHTML = ``;
       main.appendChild(appElement);
       initFilters();
-      statistic = new Statistic(cloneDeep(moviesData));
+      statistic = new Statistic(cloneDeep(localModel.getData));
+      main.appendChild(statistic.render());
+      statistic.showDiagram();
       renderMainCards(mainCards);
       renderTopCards(topCards);
       renderCommentedCards(commentedCards);
-    }).catch(() => {
-      main.querySelector(`.modal_container`).innerText = `Something went wrong while loading movies. Check your connection or try again later`;
+    }).catch((err) => {
+      main.querySelector(`.modal_container`).innerText = `Something went wrong while loading movies. Check your connection or try again later
+      ${err}`;
     });
 }

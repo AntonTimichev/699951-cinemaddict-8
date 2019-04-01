@@ -125,7 +125,8 @@ export class Popup extends Component {
         this._state.text = true;
       }
       this.update(this._getFormFields());
-      this._updateServerData();
+      this._block();
+      this._onSubmit(this._data);
       this._state.isChange = false;
     }
   }
@@ -135,10 +136,6 @@ export class Popup extends Component {
     if (this._emotion) {
       this._emotion.checked = false;
     }
-  }
-
-  set updateServer(func) {
-    this._updateServer = func;
   }
 
   _block() {
@@ -153,20 +150,7 @@ export class Popup extends Component {
     }
   }
 
-  _updateServerData() {
-    this._block();
-    this._updateServer(this._data.id, this.toRAW())
-      .then(() => {
-        this._processResponse();
-        this._onSubmit(this._data);
-      })
-      .catch(() => {
-        this._shakeForm();
-        this._processResponse(false);
-      });
-  }
-
-  _processResponse(bool = true) {
+  processResponse(bool = true) {
     this._unblock();
     if (this._state.text) {
       this._clearComment();
@@ -187,7 +171,7 @@ export class Popup extends Component {
     }
   }
 
-  _shakeForm() {
+  shakeForm() {
     this._form.classList.add(`shake`);
     const timerForm = setTimeout(() => {
       this._form.classList.remove(`shake`);
@@ -234,33 +218,33 @@ export class Popup extends Component {
     return createPopupTemplate(this._data);
   }
 
-  toRAW() {
-    return {
-      'id': this._data.id,
-      'comments': this._data.comments,
-      'filmInfo': {
-        'actors': this._data.actors,
-        'age-rating': this._data.ageLimit,
-        'alternative_title': this._data.originTitle,
-        'description': this._data.description,
-        'director': this._data.director,
-        'genres': this._data.info.genres,
-        'poster': this._data.src,
-        'release': {
-          'date': this._data.info.releaseTime,
-          'release_country': this._data.country
-        },
-        'runtime': this._data.info.duration,
-        'title': this._data.title,
-        'total_rating': this._data.rating,
-        'writers': this._data.writers
-      },
-      'user_details': {
-        'already_watched': this._data.watched,
-        'favorite': this._data.favorite,
-        'personal_rating': this._data.rate,
-        'watchlist': this._data.watchlist
-      }
-    };
-  }
+  // toRAW() {
+  //   return {
+  //     'id': this._data.id,
+  //     'comments': this._data.comments,
+  //     'filmInfo': {
+  //       'actors': this._data.actors,
+  //       'age-rating': this._data.ageLimit,
+  //       'alternative_title': this._data.originTitle,
+  //       'description': this._data.description,
+  //       'director': this._data.director,
+  //       'genres': this._data.info.genres,
+  //       'poster': this._data.src,
+  //       'release': {
+  //         'date': this._data.info.releaseTime,
+  //         'release_country': this._data.country
+  //       },
+  //       'runtime': this._data.info.duration,
+  //       'title': this._data.title,
+  //       'total_rating': this._data.rating,
+  //       'writers': this._data.writers
+  //     },
+  //     'user_details': {
+  //       'already_watched': this._data.watched,
+  //       'favorite': this._data.favorite,
+  //       'personal_rating': this._data.rate,
+  //       'watchlist': this._data.watchlist
+  //     }
+  //   };
+  // }
 }

@@ -2,10 +2,21 @@ import {Component} from "../Component";
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {createStatisticTemplate} from "./create-statistic-template";
+import {createElement} from "../utils";
+import {createInnerStatisticTemplate} from "./create-inner-statistictemplate";
 
 export class Statistic extends Component {
   constructor(data) {
     super(data);
+    this._isChanged = null;
+  }
+
+  get isChanged() {
+    return this._isChanged;
+  }
+
+  set isChanged(value) {
+    this._isChanged = value;
   }
 
   _calculateStatistic() {
@@ -32,8 +43,8 @@ export class Statistic extends Component {
     return this._statistic;
   }
 
-  set data(value) {
-    this._data = value;
+  update(data) {
+    this._data = data;
   }
 
   _getStatsForCanvas(data) {
@@ -44,6 +55,13 @@ export class Statistic extends Component {
       nameOfGenres.push(pair[0]);
     });
     return {valuesOfGenres, nameOfGenres};
+  }
+
+  rerender() {
+    this._calculateStatistic();
+    const newStats = createElement(createInnerStatisticTemplate(this._statistic));
+    this._element.innerHTML = ``;
+    this._element.appendChild(newStats);
   }
 
   _sortStatistic(stats) {

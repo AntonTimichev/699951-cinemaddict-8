@@ -309,6 +309,9 @@ a:hover {
 .film-card__controls-item--active {
   border: solid 1px yellow;
 }
+.film-card__controls-item--error {
+  border: solid 2px red;
+}
 
 .film-card:hover .film-card__poster {
   bottom: calc(100% - 340px);

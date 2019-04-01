@@ -40,14 +40,25 @@ export class Card extends Component {
 
   _onControlsButtonClick(evt) {
     evt.preventDefault();
-    const pressedButton = evt.target.closest(`.film-card__controls-item`);
-    if (pressedButton) {
-      pressedButton.classList.toggle(`film-card__controls-item--active`);
-      if (pressedButton.classList.contains(`film-card__controls-item--add-to-watchlist`) && typeof this._onAddToWatchList === `function`) {
+    this._pressedButton = evt.target.closest(`.film-card__controls-item`);
+    if (this._pressedButton) {
+
+      if (this._pressedButton.classList.contains(`film-card__controls-item--add-to-watchlist`) && typeof this._onAddToWatchList === `function`) {
         this._onAddToWatchList(this._data);
-      } else if (pressedButton.classList.contains(`film-card__controls-item--mark-as-watched`) && typeof this._onMarkAsWatched === `function`) {
+      } else if (this._pressedButton.classList.contains(`film-card__controls-item--mark-as-watched`) && typeof this._onMarkAsWatched === `function`) {
         this._onMarkAsWatched(this._data);
       }
+    }
+  }
+
+  processResponse(bool = true) {
+    if (bool) {
+      if (this._pressedButton.classList.contains(`film-card__controls-item--error`)) {
+        this._pressedButton.classList.remove(`film-card__controls-item--error`);
+      }
+      this._pressedButton.classList.toggle(`film-card__controls-item--active`);
+    } else {
+      this._pressedButton.classList.add(`film-card__controls-item--error`);
     }
   }
 
