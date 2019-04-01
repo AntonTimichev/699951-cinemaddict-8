@@ -309,6 +309,9 @@ a:hover {
 .film-card__controls-item--active {
   border: solid 1px yellow;
 }
+.film-card__controls-item--error {
+  border: solid 2px red;
+}
 
 .film-card:hover .film-card__poster {
   bottom: calc(100% - 340px);
@@ -843,4 +846,76 @@ a:hover {
 .statistic__chart-wrap {
   margin-left: 30px;
   width: 1000px;
+}
+
+
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+.shake {
+  animation: shake 0.6s;
+}
+
+.film-details__user-rating-input:checked + .film-details__user-rating-label.error-input-score {
+  background-color: red;
+}
+
+.film-details__comment-input.error-comment {
+  border: solid 2px red;
+}
+
+.fixed-overlay {
+  position: fixed;
+  overflow: auto;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.fixed-overlay__modal {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.fixed-overlay__modal::after {
+  display: inline-block;
+  vertical-align: middle;
+  width: 0;
+  height: 100%;
+  content: '';
+}
+
+.modal {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.modal_container {
+  margin: 50px;
+  padding: 20px;
+  text-align: left;
+  white-space: normal;
+  background-color: #fff;
+  color: #000;
 }

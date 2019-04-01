@@ -1,6 +1,7 @@
 import {createCommentItemTemplate} from "./create-comment-item-template";
 import {createRatingTemplate} from "./create-rating-template";
 import {createUserRatingTemplate} from "./create-user-rating-template";
+import {createGenreTemplate} from "./create-genre-template";
 import moment from 'moment';
 
 export function createPopupTemplate(data) {
@@ -9,10 +10,11 @@ export function createPopupTemplate(data) {
     rating,
     info,
     src,
-    originTitle = title,
+    director,
+    writers,
+    originTitle,
     actors,
     ageLimit,
-    releaseTime,
     rate = 0,
     country,
     description,
@@ -22,8 +24,9 @@ export function createPopupTemplate(data) {
     favorite,
   } = data;
 
-  const releaseDate = moment(releaseTime).format(`DD MMMM YYYY`);
-  const runTime = `${moment.duration(info.duration).get(`hours`)}h ${moment.duration(info.duration).get(`minutes`)}m`;
+  const releaseDate = moment(info.releaseTime).format(`DD MMMM YYYY`);
+  const durationTimestamp = info.duration * 60000;
+  const runTime = `${moment.duration(durationTimestamp).get(`hours`)}h ${moment.duration(durationTimestamp).get(`minutes`)}m`;
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -53,15 +56,15 @@ export function createPopupTemplate(data) {
         <table class="film-details__table">
           <tr class="film-details__row">
             <td class="film-details__term">Director</td>
-            <td class="film-details__cell">Brad Bird</td>
+            <td class="film-details__cell">${director}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">Brad Bird</td>
+            <td class="film-details__cell">${writers.join(` `)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
-            <td class="film-details__cell">${actors}</td>
+            <td class="film-details__cell">${actors.join(` `)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
@@ -78,7 +81,8 @@ export function createPopupTemplate(data) {
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">${info.genre}</span></td>
+              ${(Array.from(info.genres).map((genre) => createGenreTemplate(genre))).join(`\n`)}
+            </td>
           </tr>
         </table>
 
