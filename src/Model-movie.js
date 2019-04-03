@@ -1,4 +1,4 @@
-export class ModelTask {
+export class ModelMovie {
   constructor(data) {
     this.id = data[`id`];
     this.title = data[`film_info`][`title`] || ``;
@@ -24,11 +24,11 @@ export class ModelTask {
   }
 
   static parseMovie(data) {
-    return new ModelTask(data);
+    return new ModelMovie(data);
   }
 
   static parseMovies(data) {
-    return data.map(ModelTask.parseMovie);
+    return data.map(ModelMovie.parseMovie);
   }
 }
 

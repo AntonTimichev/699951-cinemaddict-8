@@ -6,9 +6,13 @@ import {Filter} from "../filter/FIlter";
 import {Statistic} from "../statistic/Statistic";
 import {API} from "../Api";
 import {LocalModel} from "../LocalModel";
+import {Store} from "../Store";
+import {Provider} from "../Provider";
 import {cloneDeep} from 'lodash';
 
 let api = null;
+let store = null;
+let provider = null;
 let main = null;
 let filtersContainer = null;
 let mainFilmsContainer = null;
@@ -106,7 +110,7 @@ const getInstancesOfCards = (data) => data.map((info) => {
   card.onClick = (copyData) => {
     const popup = new Popup(copyData);
     popup.onSubmit = (newData) => {
-      api.updateMovie(newData.id, API.toRAW(newData))
+      provider.updateMovie(newData.id, newData)
         .then(() => {
           popup.processResponse();
           card.update(newData);
@@ -124,7 +128,7 @@ const getInstancesOfCards = (data) => data.map((info) => {
   };
   card.onAddToWatchList = (cardData) => {
     cardData.watchlist = !cardData.watchlist;
-    api.updateMovie(cardData.id, API.toRAW(cardData))
+    provider.updateMovie(cardData.id, cardData)
       .then(() => {
         card.processResponse();
         localModel.updateData(cardData);
@@ -137,7 +141,7 @@ const getInstancesOfCards = (data) => data.map((info) => {
   };
   card.onMarkAsWatched = (cardData) => {
     cardData.watched = !cardData.watched;
-    api.updateMovie(cardData.id, API.toRAW(cardData))
+    provider.updateMovie(cardData.id, cardData)
       .then(() => {
         card.processResponse();
         localModel.updateData(cardData);
@@ -200,10 +204,19 @@ function getFilteredCardsData(cardsData, id) {
   });
 }
 
-export function initApp({endPoint, authorization}, container) {
+export function initApp({endPoint, authorization}, key, container) {
   main = container;
   api = new API({endPoint, authorization});
-  api.getMovies()
+  store = new Store({key, storage: localStorage});
+  provider = new Provider({api, store});
+  window.addEventListener(`offline`, () => {
+    document.title = `${document.title}[OFFLINE]`;
+  });
+  window.addEventListener(`online`, () => {
+    document.title = document.title.split(`[OFFLINE]`)[0];
+    provider.syncMovies();
+  });
+  provider.getMovies()
     .then((movies) => {
       localModel = new LocalModel(movies);
       const [mainCards, topCards, commentedCards] = getCardsDataForContainers(localModel.getData);
@@ -222,8 +235,7 @@ export function initApp({endPoint, authorization}, container) {
       renderMainCards(mainCards);
       renderTopCards(topCards);
       renderCommentedCards(commentedCards);
-    }).catch((err) => {
-      main.querySelector(`.modal_container`).innerText = `Something went wrong while loading movies. Check your connection or try again later
-      ${err}`;
+    }).catch(() => {
+      main.querySelector(`.modal_container`).innerText = `Something went wrong while loading movies. Check your connection or try again later`;
     });
 }

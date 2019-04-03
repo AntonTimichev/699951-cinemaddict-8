@@ -217,34 +217,4 @@ export class Popup extends Component {
   get template() {
     return createPopupTemplate(this._data);
   }
-
-  // toRAW() {
-  //   return {
-  //     'id': this._data.id,
-  //     'comments': this._data.comments,
-  //     'filmInfo': {
-  //       'actors': this._data.actors,
-  //       'age-rating': this._data.ageLimit,
-  //       'alternative_title': this._data.originTitle,
-  //       'description': this._data.description,
-  //       'director': this._data.director,
-  //       'genres': this._data.info.genres,
-  //       'poster': this._data.src,
-  //       'release': {
-  //         'date': this._data.info.releaseTime,
-  //         'release_country': this._data.country
-  //       },
-  //       'runtime': this._data.info.duration,
-  //       'title': this._data.title,
-  //       'total_rating': this._data.rating,
-  //       'writers': this._data.writers
-  //     },
-  //     'user_details': {
-  //       'already_watched': this._data.watched,
-  //       'favorite': this._data.favorite,
-  //       'personal_rating': this._data.rate,
-  //       'watchlist': this._data.watchlist
-  //     }
-  //   };
-  // }
 }
