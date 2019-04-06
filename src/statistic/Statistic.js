@@ -57,6 +57,11 @@ export class Statistic extends Component {
     return {valuesOfGenres, nameOfGenres};
   }
 
+  changeView(data) {
+    this.update(data);
+    this.rerender();
+  }
+
   rerender() {
     this._calculateStatistic();
     const newStats = createElement(createInnerStatisticTemplate(this._statistic));

@@ -1,6 +1,6 @@
 import {initApp} from "./app-block/app";
 
-const AUTHORIZATION = `Basic fk49gyj5655h055k30v`;
+const AUTHORIZATION = `Basic fkj34gdd3055k30v`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle/`;
 const MOVIE_STORE_KEY = `movie-store-key`;
 

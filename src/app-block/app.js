@@ -5,7 +5,6 @@ import {Popup} from "../popup-card/Popup-Card";
 import {Filter} from "../filter/FIlter";
 import {Statistic} from "../statistic/Statistic";
 import {API} from "../Api";
-import {LocalModel} from "../LocalModel";
 import {Store} from "../Store";
 import {Provider} from "../Provider";
 import {cloneDeep} from 'lodash';
@@ -21,7 +20,7 @@ let commentedFilmsContainer = null;
 let activeFilterButton = null;
 let filmsSection = null;
 let statistic = null;
-let localModel = null;
+let mainCardsData = null;
 
 function createAppElement() {
   const template = createAppTemplate();
@@ -56,33 +55,33 @@ const FiltersSettings = [
   },
 ];
 
-let mainCardsData = null;
-
 function changeFilterValueForCards(filterId) {
-  mainCardsData = localModel.getData;
+  mainCardsData = provider.getAllData();
   if (filterId === `history`) {
     filterId = `watched`;
   }
   switch (filterId) {
     case `watchlist`:
     case `favorite`:
-    case `watched` : mainCardsData = getFilteredCardsData(localModel.getData, filterId);
+    case `watched` :
+    case `all`: mainCardsData = getFilteredCardsData(provider.getAllData(), filterId);
       hideStatistic();
+      renderMainCards(mainCardsData);
       break;
     case `stats`:
       if (statistic.isChanged) {
-        statistic.update(mainCardsData);
-        statistic.rerender();
-        statistic.showDiagram();
+        statistic.changeView(mainCardsData);
+        statistic.isChanged = false;
       }
-      filmsSection.classList.add(`visually-hidden`);
-      statistic.element.classList.remove(`visually-hidden`);
-      statistic.isChanged = false;
-      return;
-    default: hideStatistic();
+      statistic.showDiagram();
+      showStatistic();
       break;
   }
-  renderMainCards(mainCardsData);
+}
+
+function showStatistic() {
+  filmsSection.classList.add(`visually-hidden`);
+  statistic.element.classList.remove(`visually-hidden`);
 }
 
 function hideStatistic() {
@@ -115,7 +114,6 @@ const getInstancesOfCards = (data) => data.map((info) => {
           popup.processResponse();
           card.update(newData);
           card.rerender();
-          localModel.updateData(card.data);
           statistic.isChanged = true;
           changeFilter(`watchlist`, `history`);
         })
@@ -131,7 +129,6 @@ const getInstancesOfCards = (data) => data.map((info) => {
     provider.updateMovie(cardData.id, cardData)
       .then(() => {
         card.processResponse();
-        localModel.updateData(cardData);
         statistic.isChanged = true;
         changeFilter(`watchlist`);
       })
@@ -144,7 +141,6 @@ const getInstancesOfCards = (data) => data.map((info) => {
     provider.updateMovie(cardData.id, cardData)
       .then(() => {
         card.processResponse();
-        localModel.updateData(cardData);
         statistic.isChanged = true;
         changeFilter(`history`);
       })
@@ -161,7 +157,7 @@ function changeFilter(...filtersId) {
     if (filterId === `history`) {
       filterId = `watched`;
     }
-    filterInstance.update({count: localModel.getData.filter((item) => item[filterId]).length});
+    filterInstance.update({count: provider.getAllData().filter((item) => item[filterId]).length});
     filterInstance.rerender();
   });
 }
@@ -199,9 +195,13 @@ export function initFilters() {
 }
 
 function getFilteredCardsData(cardsData, id) {
-  return cardsData.filter((cardInfo) => {
-    return cardInfo[id];
-  });
+  if (id === `all`) {
+    return cardsData;
+  } else {
+    return cardsData.filter((cardInfo) => {
+      return cardInfo[id];
+    });
+  }
 }
 
 export function initApp({endPoint, authorization}, key, container) {
@@ -217,9 +217,8 @@ export function initApp({endPoint, authorization}, key, container) {
     provider.syncMovies();
   });
   provider.getMovies()
-    .then((movies) => {
-      localModel = new LocalModel(movies);
-      const [mainCards, topCards, commentedCards] = getCardsDataForContainers(localModel.getData);
+    .then(() => {
+      const [mainCards, topCards, commentedCards] = getCardsDataForContainers(provider.getAllData());
       const appElement = createAppElement();
       filtersContainer = appElement.querySelector(`.main-navigation`);
       mainFilmsContainer = appElement.querySelector(`.films-list .films-list__container`);
@@ -229,9 +228,8 @@ export function initApp({endPoint, authorization}, key, container) {
       main.innerHTML = ``;
       main.appendChild(appElement);
       initFilters();
-      statistic = new Statistic(cloneDeep(localModel.getData));
+      statistic = new Statistic(cloneDeep(provider.getAllData()));
       main.appendChild(statistic.render());
-      statistic.showDiagram();
       renderMainCards(mainCards);
       renderTopCards(topCards);
       renderCommentedCards(commentedCards);

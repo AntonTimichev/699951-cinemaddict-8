@@ -30,7 +30,7 @@ export class API {
   getMovies() {
     return this._load({url: `movies`})
       .then(toJSON)
-      .then(ModelMovie.parseMovies);
+      .then(ModelMovie.parseToCards);
   }
 
   updateMovie(id, data) {
@@ -41,7 +41,7 @@ export class API {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then(toJSON)
-      .then(ModelMovie.parseMovie);
+      .then(ModelMovie.parseToCard);
   }
 
   syncMovies(data) {

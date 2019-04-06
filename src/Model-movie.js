@@ -23,12 +23,42 @@ export class ModelMovie {
     this.rate = data[`user_details`][`personal_rating`] || 0;
   }
 
-  static parseMovie(data) {
+  static parseToCard(data) {
     return new ModelMovie(data);
   }
 
-  static parseMovies(data) {
-    return data.map(ModelMovie.parseMovie);
+  static parseToCards(data) {
+    return data.map(ModelMovie.parseToCard);
+  }
+
+  static parseToServer(data) {
+    return {
+      'id': data.id,
+      'comments': data.comments,
+      'film_info': {
+        'actors': data.actors,
+        'age-rating': data.ageLimit,
+        'alternative_title': data.originTitle,
+        'description': data.description,
+        'director': data.director,
+        'genre': data.info.genres,
+        'poster': data.src,
+        'release': {
+          'date': data.info.releaseTime,
+          'release_country': data.country
+        },
+        'runtime': data.info.duration,
+        'title': data.title,
+        'total_rating': data.rating,
+        'writers': data.writers
+      },
+      'user_details': {
+        'already_watched': data.watched,
+        'favorite': data.favorite,
+        'personal_rating': data.rate,
+        'watchlist': data.watchlist
+      }
+    };
   }
 }
 

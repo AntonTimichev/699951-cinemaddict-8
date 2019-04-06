@@ -12,7 +12,7 @@ export class Provider {
   }
 
   updateMovie(id, data) {
-    const adaptedData = this.toRAW(data);
+    const adaptedData = ModelMovie.parseToServer(data);
     if (this._isOnline()) {
       return this._api.updateMovie(id, adaptedData)
         .then((movie) => {
@@ -22,7 +22,7 @@ export class Provider {
     } else {
       this._needSync = true;
       this._store.setItem({key: adaptedData.id, item: adaptedData});
-      return Promise.resolve(ModelMovie.parseMovie(adaptedData));
+      return Promise.resolve(ModelMovie.parseToCard(adaptedData));
     }
   }
 
@@ -30,13 +30,13 @@ export class Provider {
     if (this._isOnline()) {
       return this._api.getMovies()
         .then((movies) => {
-          movies.map((movie) => this._store.setItem({key: movie.id, item: this.toRAW(movie)}));
+          movies.map((movie) => this._store.setItem({key: movie.id, item: ModelMovie.parseToServer(movie)}));
           return movies;
         });
     } else {
       const rawMoviesMap = this._store.getAll();
       const rawMovies = objectToArray(rawMoviesMap);
-      const movies = ModelMovie.parseMovies(rawMovies);
+      const movies = ModelMovie.parseToCards(rawMovies);
       return Promise.resolve(movies);
     }
   }
@@ -50,34 +50,10 @@ export class Provider {
     }
   }
 
-  toRAW(data) {
-    return {
-      'id': data.id,
-      'comments': data.comments,
-      'film_info': {
-        'actors': data.actors,
-        'age-rating': data.ageLimit,
-        'alternative_title': data.originTitle,
-        'description': data.description,
-        'director': data.director,
-        'genres': data.info.genres,
-        'poster': data.src,
-        'release': {
-          'date': data.info.releaseTime,
-          'release_country': data.country
-        },
-        'runtime': data.info.duration,
-        'title': data.title,
-        'total_rating': data.rating,
-        'writers': data.writers
-      },
-      'user_details': {
-        'already_watched': data.watched,
-        'favorite': data.favorite,
-        'personal_rating': data.rate,
-        'watchlist': data.watchlist
-      }
-    };
+  getAllData() {
+    return Object.values(this._store.getAll()).map((item) => {
+      return ModelMovie.parseToCard(item);
+    });
   }
 
   _isOnline() {
