@@ -70,10 +70,9 @@ function changeFilterValueForCards(filterId) {
       break;
     case `stats`:
       if (statistic.isChanged) {
-        statistic.changeView(mainCardsData);
+        statistic.updateDiagram(mainCardsData);
         statistic.isChanged = false;
       }
-      statistic.showDiagram();
       showStatistic();
       break;
   }
@@ -229,6 +228,7 @@ export function initApp({endPoint, authorization}, key, container) {
       main.appendChild(appElement);
       initFilters();
       statistic = new Statistic(cloneDeep(provider.getAllData()));
+      statistic.isChanged = true;
       main.appendChild(statistic.render());
       renderMainCards(mainCards);
       renderTopCards(topCards);
