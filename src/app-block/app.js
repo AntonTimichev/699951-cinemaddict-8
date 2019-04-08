@@ -5,10 +5,13 @@ import {Popup} from "../popup-card/Popup-Card";
 import {Filter} from "../filter/FIlter";
 import {Statistic} from "../statistic/Statistic";
 import {API} from "../Api";
-import {LocalModel} from "../LocalModel";
+import {Store} from "../Store";
+import {Provider} from "../Provider";
 import {cloneDeep} from 'lodash';
 
 let api = null;
+let store = null;
+let provider = null;
 let main = null;
 let filtersContainer = null;
 let mainFilmsContainer = null;
@@ -17,7 +20,7 @@ let commentedFilmsContainer = null;
 let activeFilterButton = null;
 let filmsSection = null;
 let statistic = null;
-let localModel = null;
+let mainCardsData = null;
 
 function createAppElement() {
   const template = createAppTemplate();
@@ -52,33 +55,32 @@ const FiltersSettings = [
   },
 ];
 
-let mainCardsData = null;
-
 function changeFilterValueForCards(filterId) {
-  mainCardsData = localModel.getData;
+  mainCardsData = provider.getAllData();
   if (filterId === `history`) {
     filterId = `watched`;
   }
   switch (filterId) {
     case `watchlist`:
     case `favorite`:
-    case `watched` : mainCardsData = getFilteredCardsData(localModel.getData, filterId);
+    case `watched` :
+    case `all`: mainCardsData = getFilteredCardsData(provider.getAllData(), filterId);
       hideStatistic();
+      renderMainCards(mainCardsData);
       break;
     case `stats`:
       if (statistic.isChanged) {
-        statistic.update(mainCardsData);
-        statistic.rerender();
-        statistic.showDiagram();
+        statistic.updateDiagram(mainCardsData);
+        statistic.isChanged = false;
       }
-      filmsSection.classList.add(`visually-hidden`);
-      statistic.element.classList.remove(`visually-hidden`);
-      statistic.isChanged = false;
-      return;
-    default: hideStatistic();
+      showStatistic();
       break;
   }
-  renderMainCards(mainCardsData);
+}
+
+function showStatistic() {
+  filmsSection.classList.add(`visually-hidden`);
+  statistic.element.classList.remove(`visually-hidden`);
 }
 
 function hideStatistic() {
@@ -106,12 +108,11 @@ const getInstancesOfCards = (data) => data.map((info) => {
   card.onClick = (copyData) => {
     const popup = new Popup(copyData);
     popup.onSubmit = (newData) => {
-      api.updateMovie(newData.id, API.toRAW(newData))
+      provider.updateMovie(newData.id, newData)
         .then(() => {
           popup.processResponse();
           card.update(newData);
           card.rerender();
-          localModel.updateData(card.data);
           statistic.isChanged = true;
           changeFilter(`watchlist`, `history`);
         })
@@ -124,10 +125,9 @@ const getInstancesOfCards = (data) => data.map((info) => {
   };
   card.onAddToWatchList = (cardData) => {
     cardData.watchlist = !cardData.watchlist;
-    api.updateMovie(cardData.id, API.toRAW(cardData))
+    provider.updateMovie(cardData.id, cardData)
       .then(() => {
         card.processResponse();
-        localModel.updateData(cardData);
         statistic.isChanged = true;
         changeFilter(`watchlist`);
       })
@@ -137,10 +137,9 @@ const getInstancesOfCards = (data) => data.map((info) => {
   };
   card.onMarkAsWatched = (cardData) => {
     cardData.watched = !cardData.watched;
-    api.updateMovie(cardData.id, API.toRAW(cardData))
+    provider.updateMovie(cardData.id, cardData)
       .then(() => {
         card.processResponse();
-        localModel.updateData(cardData);
         statistic.isChanged = true;
         changeFilter(`history`);
       })
@@ -157,7 +156,7 @@ function changeFilter(...filtersId) {
     if (filterId === `history`) {
       filterId = `watched`;
     }
-    filterInstance.update({count: localModel.getData.filter((item) => item[filterId]).length});
+    filterInstance.update({count: provider.getAllData().filter((item) => item[filterId]).length});
     filterInstance.rerender();
   });
 }
@@ -195,18 +194,30 @@ export function initFilters() {
 }
 
 function getFilteredCardsData(cardsData, id) {
-  return cardsData.filter((cardInfo) => {
-    return cardInfo[id];
-  });
+  if (id === `all`) {
+    return cardsData;
+  } else {
+    return cardsData.filter((cardInfo) => {
+      return cardInfo[id];
+    });
+  }
 }
 
-export function initApp({endPoint, authorization}, container) {
+export function initApp({endPoint, authorization}, key, container) {
   main = container;
   api = new API({endPoint, authorization});
-  api.getMovies()
-    .then((movies) => {
-      localModel = new LocalModel(movies);
-      const [mainCards, topCards, commentedCards] = getCardsDataForContainers(localModel.getData);
+  store = new Store({key, storage: localStorage});
+  provider = new Provider({api, store});
+  window.addEventListener(`offline`, () => {
+    document.title = `${document.title}[OFFLINE]`;
+  });
+  window.addEventListener(`online`, () => {
+    document.title = document.title.split(`[OFFLINE]`)[0];
+    provider.syncMovies();
+  });
+  provider.getMovies()
+    .then(() => {
+      const [mainCards, topCards, commentedCards] = getCardsDataForContainers(provider.getAllData());
       const appElement = createAppElement();
       filtersContainer = appElement.querySelector(`.main-navigation`);
       mainFilmsContainer = appElement.querySelector(`.films-list .films-list__container`);
@@ -216,14 +227,13 @@ export function initApp({endPoint, authorization}, container) {
       main.innerHTML = ``;
       main.appendChild(appElement);
       initFilters();
-      statistic = new Statistic(cloneDeep(localModel.getData));
+      statistic = new Statistic(cloneDeep(provider.getAllData()));
+      statistic.isChanged = true;
       main.appendChild(statistic.render());
-      statistic.showDiagram();
       renderMainCards(mainCards);
       renderTopCards(topCards);
       renderCommentedCards(commentedCards);
-    }).catch((err) => {
-      main.querySelector(`.modal_container`).innerText = `Something went wrong while loading movies. Check your connection or try again later
-      ${err}`;
+    }).catch(() => {
+      main.querySelector(`.modal_container`).innerText = `Something went wrong while loading movies. Check your connection or try again later`;
     });
 }

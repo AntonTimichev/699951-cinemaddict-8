@@ -57,8 +57,14 @@ export class Statistic extends Component {
     return {valuesOfGenres, nameOfGenres};
   }
 
-  rerender() {
+  updateDiagram(data) {
+    this.update(data);
     this._calculateStatistic();
+    this.rerender();
+    this.recalcDiagram();
+  }
+
+  rerender() {
     const newStats = createElement(createInnerStatisticTemplate(this._statistic));
     this._element.innerHTML = ``;
     this._element.appendChild(newStats);
@@ -75,7 +81,7 @@ export class Statistic extends Component {
     return createStatisticTemplate(this._calculateStatistic());
   }
 
-  showDiagram() {
+  recalcDiagram() {
     const statisticCtx = this._element.querySelector(`.statistic__chart`);
     const {valuesOfGenres, nameOfGenres} = this._statistic.canvas;
     const BAR_HEIGHT = 50;
