@@ -3,12 +3,50 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {createStatisticTemplate} from "./create-statistic-template";
 import {createElement} from "../utils";
-import {createInnerStatisticTemplate} from "./create-inner-statistictemplate";
+import moment from 'moment';
+import {createLabelStatisticTemplate} from "./create-label-statistic-template";
+import {createTextListTemplate} from "./create-text-list-template";
+import {createChartStatisticTemplate} from "./create-chart-statistic-template";
 
 export class Statistic extends Component {
   constructor(data) {
     super(data);
     this._isChanged = null;
+    this._periodName = {
+      'today': `days`,
+      'week': `weeks`,
+      'month': `months`,
+      'year': `years`
+    };
+
+    this._onTimeFilterFormChange = this._onTimeFilterFormChange.bind(this);
+  }
+
+  bind() {
+    this._timeFilterForm = this._element.querySelector(`.statistic__filters`);
+    this._timeFilterForm.addEventListener(`change`, this._onTimeFilterFormChange);
+
+  }
+
+  _getPeriodName(value) {
+    return this._periodName[value];
+  }
+
+  _onTimeFilterFormChange(evt) {
+    const {target} = evt;
+    const filteredData = this._getDataForNewPeriod(target.value);
+    this.updateDiagram(filteredData);
+  }
+
+  _getDataForNewPeriod(filterValue) {
+    if (filterValue === `all-time`) {
+      return this._data.slice();
+    } else {
+      const id = this._getPeriodName(filterValue);
+      return this._data.filter((card) => {
+        return !(moment().diff(card.watchingDate, id));
+      });
+    }
   }
 
   get isChanged() {
@@ -19,11 +57,11 @@ export class Statistic extends Component {
     this._isChanged = value;
   }
 
-  _calculateStatistic() {
+  _calculateStatistic(data) {
     this._statistic = {};
     let totalDuration = 0;
     let watchedCount = 0;
-    this._data.forEach((card) => {
+    data.forEach((card) => {
       const {genres, duration} = card.info;
       if (card.watched) {
         genres.forEach((genre) => {
@@ -58,16 +96,27 @@ export class Statistic extends Component {
   }
 
   updateDiagram(data) {
-    this.update(data);
-    this._calculateStatistic();
+    if (this._isChanged) {
+      this.update(data);
+    }
+    this._calculateStatistic(data);
     this.rerender();
     this.recalcDiagram();
   }
 
   rerender() {
-    const newStats = createElement(createInnerStatisticTemplate(this._statistic));
-    this._element.innerHTML = ``;
-    this._element.appendChild(newStats);
+    this._label = this._element.querySelector(`.statistic__rank`);
+    this._textList = this._element.querySelector(`.statistic__text-list`);
+    this._chart = this._element.querySelector(`.statistic__chart-wrap`);
+    const newLabel = createElement(createLabelStatisticTemplate(this._statistic.canvas.nameOfGenres[0]));
+    const newTextList = createElement(createTextListTemplate(this._statistic));
+    const newChart = createElement(createChartStatisticTemplate());
+    this._element.replaceChild(newLabel, this._label);
+    this._element.replaceChild(newTextList, this._textList);
+    this._element.replaceChild(newChart, this._chart);
+    this._label = newLabel;
+    this._textList = newTextList;
+    this._chart = newChart;
   }
 
   _sortStatistic(stats) {
@@ -78,7 +127,7 @@ export class Statistic extends Component {
   }
 
   get template() {
-    return createStatisticTemplate(this._calculateStatistic());
+    return createStatisticTemplate(this._calculateStatistic(this._data.slice()));
   }
 
   recalcDiagram() {

@@ -23,6 +23,10 @@ export class Card extends Component {
     this._onMarkAsWatched = func;
   }
 
+  set onMarkAsFavorite(func) {
+    this._onMarkAsFavorite = func;
+  }
+
   get template() {
     return createCardTemplate(this._data);
   }
@@ -42,11 +46,12 @@ export class Card extends Component {
     evt.preventDefault();
     this._pressedButton = evt.target.closest(`.film-card__controls-item`);
     if (this._pressedButton) {
-
       if (this._pressedButton.classList.contains(`film-card__controls-item--add-to-watchlist`) && typeof this._onAddToWatchList === `function`) {
         this._onAddToWatchList(this._data);
       } else if (this._pressedButton.classList.contains(`film-card__controls-item--mark-as-watched`) && typeof this._onMarkAsWatched === `function`) {
         this._onMarkAsWatched(this._data);
+      } else if (this._pressedButton.classList.contains(`film-card__controls-item--favorite`) && typeof this._onMarkAsWatched === `function`) {
+        this._onMarkAsFavorite(this._data);
       }
     }
   }

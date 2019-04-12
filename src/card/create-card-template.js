@@ -45,10 +45,13 @@ export function createCardTemplate(data) {
 
 function createCardInfo(infoData) {
   const {releaseTime, duration, genres} = infoData;
+  const durationTimestamp = duration * 60000;
+  const minutes = moment.duration(durationTimestamp).get(`minutes`);
+  const runTime = `${moment.duration(durationTimestamp).get(`hours`)}:${minutes < 10 ? `0${minutes}` : minutes}`;
   const year = moment(releaseTime).format(`YYYY`);
   return `<p class="film-card__info">
     <span class="film-card__year">${year}</span>
-    <span class="film-card__duration">${duration}m</span>
+    <span class="film-card__duration">${runTime}</span>
     <span class="film-card__genre">${genres.join(` `)}</span>
   </p>`;
 }

@@ -25,8 +25,6 @@ export function createPopupTemplate(data) {
   } = data;
 
   const releaseDate = moment(info.releaseTime).format(`DD MMMM YYYY`);
-  const durationTimestamp = info.duration * 60000;
-  const runTime = `${moment.duration(durationTimestamp).get(`hours`)}h ${moment.duration(durationTimestamp).get(`minutes`)}m`;
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -72,7 +70,7 @@ export function createPopupTemplate(data) {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">${runTime}</td>
+            <td class="film-details__cell">${info.duration}m</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
@@ -134,8 +132,8 @@ export function createPopupTemplate(data) {
 
     <section class="film-details__user-rating-wrap">
       <div class="film-details__user-rating-controls">
-        <span class="film-details__watched-status film-details__watched-status--active">Already watched</span>
-        <button class="film-details__watched-reset" type="button">undo</button>
+        <span class="film-details__watched-status film-details__watched-status--active"></span>
+        <button class="film-details__watched-reset visually-hidden" type="button">undo</button>
       </div>
 
       <div class="film-details__user-score">

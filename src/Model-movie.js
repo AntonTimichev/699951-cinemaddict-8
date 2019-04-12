@@ -21,6 +21,7 @@ export class ModelMovie {
     this.favorite = data[`user_details`][`favorite`];
     this.country = data[`film_info`][`release`][`release_country`] || ``;
     this.rate = data[`user_details`][`personal_rating`] || 0;
+    this.watchingDate = data[`user_details`][`watching_date`] || 0;
   }
 
   static parseToCard(data) {
@@ -56,7 +57,8 @@ export class ModelMovie {
         'already_watched': data.watched,
         'favorite': data.favorite,
         'personal_rating': data.rate,
-        'watchlist': data.watchlist
+        'watchlist': data.watchlist,
+        'watching_date': data.watchingDate
       }
     };
   }

@@ -17,6 +17,7 @@ export class Popup extends Component {
     this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
     this._onFormPopupChange = this._onFormPopupChange.bind(this);
     this._onCommentInput = this._onCommentInput.bind(this);
+    this._onUndoButtonClick = this._onUndoButtonClick.bind(this);
   }
 
   _onCloseButtonClick(evt) {
@@ -96,6 +97,15 @@ export class Popup extends Component {
     this._form.addEventListener(`change`, this._onFormPopupChange);
     this._textField = this._element.querySelector(`.film-details__comment-input`);
     this._textField.addEventListener(`input`, this._onCommentInput);
+    this._watchedStatus = this._element.querySelector(`.film-details__watched-status`);
+    this._undoButton = this._element.querySelector(`.film-details__watched-reset`);
+    this._undoButton.addEventListener(`click`, this._onUndoButtonClick);
+  }
+
+  _onUndoButtonClick() {
+    this._data.comments.pop();
+    this._state.del = true;
+    this._onSubmit(this._data);
   }
 
   _onFormPopupChange(evt) {
@@ -106,7 +116,7 @@ export class Popup extends Component {
       }
       this._inputLabel = this._element.querySelector(`.film-details__user-rating-label[for='rating-${this._inputScore.value}']`);
       this._state.rate = true;
-      this.update(this._getFormFields());
+      this.update({rate: this._inputScore.value});
       this._rerenderRateField();
     } else {
       this._emotion = evt.target.closest(`.film-details__emoji-item:checked`);
@@ -128,6 +138,8 @@ export class Popup extends Component {
       this._block();
       this._onSubmit(this._data);
       this._state.isChange = false;
+    } else if (evt.which === 27) {
+      this._onCloseButtonClick(evt);
     }
   }
 
@@ -156,6 +168,7 @@ export class Popup extends Component {
       this._clearComment();
       if (bool) {
         this._rerenderCommentField();
+        this._showAddedCommentStatus();
       } else {
         this._textField.classList.add(`error-comment`);
       }
@@ -169,9 +182,24 @@ export class Popup extends Component {
       }
       this._state.rate = false;
     }
+    if (bool && this._state.del) {
+      this._rerenderCommentField();
+      this._showDeletedCommentStatus();
+    }
   }
 
-  shakeForm() {
+  _showDeletedCommentStatus() {
+    this._watchedStatus.innerHTML = `Comment deleted`;
+    this._undoButton.classList.add(`visually-hidden`);
+    this._state.del = false;
+  }
+
+  _showAddedCommentStatus() {
+    this._watchedStatus.innerHTML = `Comment added`;
+    this._undoButton.classList.remove(`visually-hidden`);
+  }
+
+  showErrorOfForm() {
     this._form.classList.add(`shake`);
     const timerForm = setTimeout(() => {
       this._form.classList.remove(`shake`);
@@ -187,7 +215,11 @@ export class Popup extends Component {
       this._countField = this._element.querySelector(`.film-details__comments-count`);
     }
     this._countField.innerText = this._data.comments.length;
-    this._commentContainer.appendChild(createElement(createCommentItemTemplate(this._data.comments[this._data.comments.length - 1])));
+    if (this._state.del) {
+      this._commentContainer.removeChild(this._commentContainer.lastElementChild);
+    } else {
+      this._commentContainer.appendChild(createElement(createCommentItemTemplate(this._data.comments[this._data.comments.length - 1])));
+    }
   }
 
   _rerenderRateField() {
@@ -212,6 +244,8 @@ export class Popup extends Component {
     this._textField.removeEventListener(`input`, this._onCommentInput);
     this._textField = null;
     this._emotion = null;
+    this._undoButton.removeEventListener(`click`, this._onUndoButtonClick);
+    this._undoButton = null;
   }
 
   get template() {
