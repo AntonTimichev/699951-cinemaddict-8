@@ -63,9 +63,9 @@ const FiltersSettings = [
   },
 ];
 
-function getFilteredByNameData(data, subStr) {
-  return data.filter((card) => {
-    return card.title.includes(subStr);
+function getFilteredByNameData(subStr) {
+  return provider.getAllData().filter((card) => {
+    return card.title.toLowerCase().includes(subStr.toLowerCase());
   });
 }
 
@@ -75,11 +75,26 @@ function initHeader(container) {
   search.onSearch = (subStr) => {
     setInitShowMoreButton();
     hideStatistic();
-    mainCards = provider.getAllData();
-    mainCards = getFilteredByNameData(mainCards, subStr);
+    changeActiveFilter();
+    mainCards = getFilteredByNameData(subStr);
     renderMainCards(getRenderedMainCards());
   };
   container.insertBefore(search.render(), headerProfile);
+}
+
+function onShowMoreButtonClick() {
+  const renderedCards = getRenderedMainCards();
+  renderMainCards(renderedCards, true);
+}
+
+function getRenderedMainCards() {
+  const lastIndex = startIndex + cardsCount;
+  const cards = mainCards.slice(startIndex, lastIndex);
+  startIndex = lastIndex;
+  if (startIndex >= mainCards.length) {
+    showMoreButton.classList.add(`visually-hidden`);
+  }
+  return cards;
 }
 
 function changeUserRank() {
@@ -113,16 +128,17 @@ function changeFilterValueForCards(filterId) {
   switch (filterId) {
     case `watchlist`:
     case `favorite`:
-    case `watched` :
-    case `all`: mainCards = getFilteredCardsData(provider.getAllData(), filterId);
+    case `watched`:
+    case `all`:
+      mainCards = getFilteredCardsData(provider.getAllData(), filterId);
       hideStatistic();
       renderMainCards(getRenderedMainCards());
       break;
     case `stats`:
       if (statistic.isChanged) {
         statistic.updateDiagram(mainCards);
-        statistic.isChanged = false;
       }
+      statistic.isChanged = false;
       showStatistic();
       break;
   }
@@ -144,19 +160,29 @@ const filtersInstances = FiltersSettings.map((info) => {
   const filter = new Filter(info);
   filter.onChange = (element, filterId) => {
     setInitShowMoreButton();
-    if (activeFilterButton) {
-      activeFilterButton.classList.remove(`main-navigation__item--active`);
-    }
-    element.classList.add(`main-navigation__item--active`);
-    activeFilterButton = element;
+    changeActiveFilter(element);
     changeFilterValueForCards(filterId);
   };
   return filter;
 });
 
+function changeActiveFilter(filter = null) {
+  if (activeFilterButton) {
+    activeFilterButton.classList.remove(`main-navigation__item--active`);
+  }
+  if (filter) {
+    filter.classList.add(`main-navigation__item--active`);
+    activeFilterButton = filter;
+  } else {
+    activeFilterButton = null;
+  }
+}
+
 function setInitShowMoreButton() {
   startIndex = 0;
-  showMoreButton.classList.remove(`visually-hidden`);
+  if (showMoreButton.classList.contains(`visually-hidden`)) {
+    showMoreButton.classList.remove(`visually-hidden`);
+  }
 }
 
 const getInstancesOfCards = (data) => data.map((info) => {
@@ -229,21 +255,6 @@ function changeFilter(...filtersId) {
     filterInstance.update({count: provider.getAllData().filter((item) => item[filterId]).length});
     filterInstance.rerender();
   });
-}
-
-function onShowMoreButtonClick() {
-  const renderedCards = getRenderedMainCards();
-  renderMainCards(renderedCards, true);
-}
-
-function getRenderedMainCards() {
-  const lastIndex = startIndex + cardsCount;
-  const cards = mainCards.slice(startIndex, lastIndex);
-  startIndex = lastIndex;
-  if (startIndex >= mainCards.length) {
-    showMoreButton.classList.add(`visually-hidden`);
-  }
-  return cards;
 }
 
 export function renderMainCards(data, isAdded = false) {

@@ -6,6 +6,7 @@ export class Search extends Component {
     super();
     this._onInput = this._onInput.bind(this);
     this._onSearchButtonClick = this._onSearchButtonClick.bind(this);
+    this._onDocumentClick = this._onDocumentClick.bind(this);
   }
 
   set onSearch(func) {
@@ -22,8 +23,15 @@ export class Search extends Component {
   _onSearchButtonClick(evt) {
     evt.preventDefault();
     this._onSearch(this._input.value);
-    this._input.value = ``;
-    this._searchButton.classList.add(`visually-hidden`);
+    document.addEventListener(`click`, this._onDocumentClick);
+  }
+
+  _onDocumentClick(evt) {
+    if (!evt.target.closest(`.header__search`) && !evt.target.closest(`.films-list__show-more`)) {
+      this._input.value = ``;
+      this._searchButton.classList.add(`visually-hidden`);
+      document.removeEventListener(`click`, this._onDocumentClick);
+    }
   }
 
   _onInput() {

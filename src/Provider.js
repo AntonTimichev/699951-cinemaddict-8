@@ -45,9 +45,8 @@ export class Provider {
     if (this._needSync) {
       this._needSync = false;
       return this._api.syncMovies(objectToArray(this._store.getAll()));
-    } else {
-      return Promise.resolve(this._store.getAll());
     }
+    return Promise.resolve(this._store.getAll());
   }
 
   getAllData() {

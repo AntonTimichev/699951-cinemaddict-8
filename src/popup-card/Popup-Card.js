@@ -22,7 +22,6 @@ export class Popup extends Component {
 
   _onCloseButtonClick(evt) {
     evt.preventDefault();
-    this.unbind();
     this.close();
   }
 
@@ -103,7 +102,9 @@ export class Popup extends Component {
   }
 
   _onUndoButtonClick() {
-    this._data.comments.pop();
+    const comments = [...this._data.comments];
+    comments.pop();
+    this.update({comments});
     this._state.del = true;
     this._onSubmit(this._data);
   }
@@ -139,7 +140,7 @@ export class Popup extends Component {
       this._onSubmit(this._data);
       this._state.isChange = false;
     } else if (evt.which === 27) {
-      this._onCloseButtonClick(evt);
+      this.close();
     }
   }
 
@@ -230,6 +231,7 @@ export class Popup extends Component {
   }
 
   close() {
+    this.unbind();
     if (this._element) {
       this._element.remove();
     }
