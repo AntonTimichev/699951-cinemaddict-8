@@ -22,7 +22,7 @@ export class Popup extends Component {
 
   _onCloseButtonClick(evt) {
     evt.preventDefault();
-    this.close();
+    this._close();
   }
 
   set onSubmit(func) {
@@ -118,7 +118,7 @@ export class Popup extends Component {
       this._inputLabel = this._element.querySelector(`.film-details__user-rating-label[for='rating-${this._inputScore.value}']`);
       this._state.rate = true;
       this.update({rate: this._inputScore.value});
-      this._rerenderRateField();
+      this._reRenderRateField();
     } else {
       this._emotion = evt.target.closest(`.film-details__emoji-item:checked`);
     }
@@ -140,7 +140,7 @@ export class Popup extends Component {
       this._onSubmit(this._data);
       this._state.isChange = false;
     } else if (evt.which === 27) {
-      this.close();
+      this._close();
     }
   }
 
@@ -168,7 +168,7 @@ export class Popup extends Component {
     if (this._state.text) {
       this._clearComment();
       if (bool) {
-        this._rerenderCommentField();
+        this._reRenderCommentField();
         this._showAddedCommentStatus();
       } else {
         this._textField.classList.add(`error-comment`);
@@ -177,14 +177,14 @@ export class Popup extends Component {
     }
     if (this._state.rate) {
       if (bool) {
-        this._rerenderRateField();
+        this._reRenderRateField();
       } else {
         this._inputLabel.classList.add(`error-input-score`);
       }
       this._state.rate = false;
     }
     if (bool && this._state.del) {
-      this._rerenderCommentField();
+      this._reRenderCommentField();
       this._showDeletedCommentStatus();
     }
   }
@@ -208,7 +208,7 @@ export class Popup extends Component {
     }, 1000);
   }
 
-  _rerenderCommentField() {
+  _reRenderCommentField() {
     if (!this._commentContainer) {
       this._commentContainer = this._element.querySelector(`.film-details__comments-list`);
     }
@@ -223,21 +223,21 @@ export class Popup extends Component {
     }
   }
 
-  _rerenderRateField() {
+  _reRenderRateField() {
     if (!this._ratingContainer) {
       this._ratingContainer = this._element.querySelector(`.film-details__rating`);
     }
     this._ratingContainer.replaceChild(createElement(createUserRatingTemplate(this._data.rate)), this._ratingContainer.lastElementChild);
   }
 
-  close() {
-    this.unbind();
+  _close() {
+    this._unbind();
     if (this._element) {
       this._element.remove();
     }
   }
 
-  unbind() {
+  _unbind() {
     this._closeBtn.removeEventListener(`click`, this._onCloseButtonClick);
     this._closeBtn = null;
     document.removeEventListener(`keydown`, this._onDocumentKeyDown);
@@ -250,7 +250,7 @@ export class Popup extends Component {
     this._undoButton = null;
   }
 
-  get template() {
+  get _template() {
     return createPopupTemplate(this._data);
   }
 }

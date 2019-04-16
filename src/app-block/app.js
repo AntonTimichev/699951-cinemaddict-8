@@ -30,12 +30,7 @@ let mainCards = null;
 let topCards = null;
 let commentedCards = null;
 
-function createAppElement() {
-  const template = createAppTemplate();
-  return createElement(template);
-}
-
-const FiltersSettings = [
+const FILTERS_SETTINGS = [
   {
     id: `all`,
     label: `All movies`,
@@ -62,6 +57,11 @@ const FiltersSettings = [
     additional: true
   },
 ];
+
+function createAppElement() {
+  const template = createAppTemplate();
+  return createElement(template);
+}
 
 function getFilteredByNameData(subStr) {
   return provider.getAllData().filter((card) => {
@@ -156,7 +156,7 @@ function hideStatistic() {
   }
 }
 
-const filtersInstances = FiltersSettings.map((info) => {
+const filtersInstances = FILTERS_SETTINGS.map((info) => {
   const filter = new Filter(info);
   filter.onChange = (element, filterId) => {
     setInitShowMoreButton();
@@ -185,66 +185,69 @@ function setInitShowMoreButton() {
   }
 }
 
-const getInstancesOfCards = (data) => data.map((info) => {
-  const card = new Card(cloneDeep(info));
-  card.onClick = (copyData) => {
-    const popup = new Popup(copyData);
-    popup.onSubmit = (newData) => {
-      provider.updateMovie(newData.id, newData)
+function getInstancesOfCards(data, hasControl = false) {
+  return data.map((info) => {
+    const card = new Card(cloneDeep(info));
+    card.hasControl = hasControl;
+    card.onClick = (copyData) => {
+      const popup = new Popup(copyData);
+      popup.onSubmit = (newData) => {
+        provider.updateMovie(newData.id, newData)
+          .then(() => {
+            popup.processResponse();
+            card.update(newData);
+            card.reRender();
+            if (newData.watched) {
+              statistic.isChanged = true;
+            }
+            changeFilter(`watchlist`, `history`, `favorite`);
+            changeUserRank();
+          })
+          .catch(() => {
+            popup.showErrorOfForm();
+            popup.processResponse(false);
+          });
+      };
+      document.body.appendChild(popup.render());
+    };
+    card.onAddToWatchList = (cardData) => {
+      cardData.watchlist = !cardData.watchlist;
+      provider.updateMovie(cardData.id, cardData)
         .then(() => {
-          popup.processResponse();
-          card.update(newData);
-          card.rerender();
-          if (newData.watched) {
-            statistic.isChanged = true;
-          }
-          changeFilter(`watchlist`, `history`, `favorite`);
+          card.processResponse();
+          changeFilter(`watchlist`);
+        })
+        .catch(() => {
+          card.processResponse(false);
+        });
+    };
+    card.onMarkAsWatched = (cardData) => {
+      cardData.watched = !cardData.watched;
+      provider.updateMovie(cardData.id, cardData)
+        .then(() => {
+          card.processResponse();
+          statistic.isChanged = true;
+          changeFilter(`history`);
           changeUserRank();
         })
         .catch(() => {
-          popup.showErrorOfForm();
-          popup.processResponse(false);
+          card.processResponse(false);
         });
     };
-    document.body.appendChild(popup.render());
-  };
-  card.onAddToWatchList = (cardData) => {
-    cardData.watchlist = !cardData.watchlist;
-    provider.updateMovie(cardData.id, cardData)
-      .then(() => {
-        card.processResponse();
-        changeFilter(`watchlist`);
-      })
-      .catch(() => {
-        card.processResponse(false);
-      });
-  };
-  card.onMarkAsWatched = (cardData) => {
-    cardData.watched = !cardData.watched;
-    provider.updateMovie(cardData.id, cardData)
-      .then(() => {
-        card.processResponse();
-        statistic.isChanged = true;
-        changeFilter(`history`);
-        changeUserRank();
-      })
-      .catch(() => {
-        card.processResponse(false);
-      });
-  };
-  card.onMarkAsFavorite = (cardData) => {
-    cardData.favorite = !cardData.favorite;
-    provider.updateMovie(cardData.id, cardData)
-      .then(() => {
-        card.processResponse();
-        changeFilter(`favorite`);
-      })
-      .catch(() => {
-        card.processResponse(false);
-      });
-  };
-  return card;
-});
+    card.onMarkAsFavorite = (cardData) => {
+      cardData.favorite = !cardData.favorite;
+      provider.updateMovie(cardData.id, cardData)
+        .then(() => {
+          card.processResponse();
+          changeFilter(`favorite`);
+        })
+        .catch(() => {
+          card.processResponse(false);
+        });
+    };
+    return card;
+  });
+}
 
 function changeFilter(...filtersId) {
   filtersId.forEach((filterId) => {
@@ -253,7 +256,7 @@ function changeFilter(...filtersId) {
       filterId = `watched`;
     }
     filterInstance.update({count: provider.getAllData().filter((item) => item[filterId]).length});
-    filterInstance.rerender();
+    filterInstance.reRender();
   });
 }
 
@@ -261,7 +264,7 @@ export function renderMainCards(data, isAdded = false) {
   if (!isAdded) {
     mainFilmsContainer.innerHTML = ``;
   }
-  const instances = getInstancesOfCards(data);
+  const instances = getInstancesOfCards(data, true);
   const elements = createFragment(getElementsOfInstances(instances));
   mainFilmsContainer.appendChild(elements);
 }

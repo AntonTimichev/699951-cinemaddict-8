@@ -1,8 +1,9 @@
 import moment from "moment";
+import {MSK_IN_MINUTES} from "../enums";
 
 export function createTextListTemplate(data) {
   const {canvas, totalDuration, watchedCount} = data;
-  const totalTimestamp = totalDuration * 60000;
+  const totalTimestamp = totalDuration * MSK_IN_MINUTES;
   const totalHours = parseInt(moment.duration(totalTimestamp).asHours(), 10);
   const totalMinutes = moment.duration(totalTimestamp).get(`minutes`);
 

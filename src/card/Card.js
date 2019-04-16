@@ -11,6 +11,10 @@ export class Card extends Component {
     this._onControlsButtonClick = this._onControlsButtonClick.bind(this);
   }
 
+  set hasControl(value) {
+    this._hasControl = value;
+  }
+
   get data() {
     return this._data;
   }
@@ -27,8 +31,8 @@ export class Card extends Component {
     this._onMarkAsFavorite = func;
   }
 
-  get template() {
-    return createCardTemplate(this._data);
+  get _template() {
+    return createCardTemplate(this._data, this._hasControl);
   }
 
   _onCommentButtonClick(evt) {
@@ -36,7 +40,7 @@ export class Card extends Component {
     this._onClickHandler(this.getData());
   }
 
-  rerender() {
+  reRender() {
     const {comments, watchlist, watched, favorite} = this._data;
     this._commentButton.innerText = `${comments.length} comments`;
     this._element.replaceChild(createElement(createFormControlsOfCard(watchlist, watched, favorite)), this._element.lastElementChild);
@@ -70,8 +74,10 @@ export class Card extends Component {
   bind() {
     this._commentButton = this._element.querySelector(`.film-card__comments`);
     this._commentButton.addEventListener(`click`, this._onCommentButtonClick);
-    this._controls = this._element.querySelector(`.film-card__controls`);
-    this._controls.addEventListener(`click`, this._onControlsButtonClick);
+    if (this._hasControl) {
+      this._controls = this._element.querySelector(`.film-card__controls`);
+      this._controls.addEventListener(`click`, this._onControlsButtonClick);
+    }
   }
 
   get id() {

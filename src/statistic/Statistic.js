@@ -100,11 +100,11 @@ export class Statistic extends Component {
       this.update(data);
     }
     this._calculateStatistic(data);
-    this.rerender();
-    this.recalcDiagram();
+    this._reRender();
+    this._reCalcDiagram();
   }
 
-  rerender() {
+  _reRender() {
     this._label = this._element.querySelector(`.statistic__rank`);
     this._textList = this._element.querySelector(`.statistic__text-list`);
     this._chart = this._element.querySelector(`.statistic__chart-wrap`);
@@ -126,11 +126,11 @@ export class Statistic extends Component {
     return this._getStatsForCanvas(sortedStats);
   }
 
-  get template() {
+  get _template() {
     return createStatisticTemplate(this._calculateStatistic(this._data.slice()));
   }
 
-  recalcDiagram() {
+  _reCalcDiagram() {
     const statisticCtx = this._element.querySelector(`.statistic__chart`);
     const {valuesOfGenres, nameOfGenres} = this._statistic.canvas;
     const BAR_HEIGHT = 50;

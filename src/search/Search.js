@@ -42,7 +42,7 @@ export class Search extends Component {
     }
   }
 
-  get template() {
+  get _template() {
     return creareTemplateSearchForm();
   }
 }

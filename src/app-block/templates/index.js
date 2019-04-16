@@ -8,8 +8,8 @@ export function createAppTemplate() {
     ${createFooterTemplate()}`;
 }
 
-// import {createNavigationTemplate} from "./create-navigation-template";
-// import {createCardsSectionTemplate} from "./create-cards-section-template";
+// import {createNavigationTemplate} from "./create-navigation-_template";
+// import {createCardsSectionTemplate} from "./create-cards-section-_template";
 //
 // export function createAppTemplate() {
 //   return `${createNavigationTemplate()}

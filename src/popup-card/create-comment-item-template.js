@@ -1,11 +1,11 @@
 import moment from 'moment';
-import {EmojiOfComment} from "../enums";
+import {emojiOfComment} from "../enums";
 
 export function createCommentItemTemplate(data) {
   const {emotion, comment, author, date} = data;
   const dayAgo = moment(date).fromNow();
   return `<li class="film-details__comment">
-    <span class="film-details__comment-emoji">${EmojiOfComment[emotion]}</span>
+    <span class="film-details__comment-emoji">${emojiOfComment[emotion]}</span>
     <div>
       <p class="film-details__comment-text">${comment}</p>
       <p class="film-details__comment-info">
