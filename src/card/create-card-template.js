@@ -14,7 +14,9 @@ function prepareDataForTemplate(data) {
     src = ``,
     description = ``,
     comments = [],
-    ...settings
+    watchlist = false,
+    watched = false,
+    favorite = false
   } = data;
 
   return {
@@ -24,7 +26,9 @@ function prepareDataForTemplate(data) {
     src,
     description,
     comments,
-    ...settings
+    watchlist,
+    watched,
+    favorite
   };
 }
 
