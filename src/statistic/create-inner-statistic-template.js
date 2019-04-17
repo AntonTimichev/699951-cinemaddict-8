@@ -1,5 +1,6 @@
 import {createTextListTemplate} from "./create-text-list-template";
 import {createLabelStatisticTemplate} from "./create-label-statistic-template";
+import {createChartStatisticTemplate} from "./create-chart-statistic-template";
 
 export function createInnerStatisticTemplate(data) {
   return `${createLabelStatisticTemplate(data.canvas.nameOfGenres[0])}
@@ -24,8 +25,6 @@ export function createInnerStatisticTemplate(data) {
     </form>
     
     ${createTextListTemplate(data)}
-
-    <div class="statistic__chart-wrap">
-      <canvas class="statistic__chart" width="1000"></canvas>
-    </div>`;
+    
+    ${createChartStatisticTemplate()}`;
 }

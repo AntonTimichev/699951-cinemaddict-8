@@ -17,12 +17,12 @@ export class Popup extends Component {
     this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
     this._onFormPopupChange = this._onFormPopupChange.bind(this);
     this._onCommentInput = this._onCommentInput.bind(this);
+    this._onUndoButtonClick = this._onUndoButtonClick.bind(this);
   }
 
   _onCloseButtonClick(evt) {
     evt.preventDefault();
-    this.unbind();
-    this.close();
+    this._close();
   }
 
   set onSubmit(func) {
@@ -96,6 +96,17 @@ export class Popup extends Component {
     this._form.addEventListener(`change`, this._onFormPopupChange);
     this._textField = this._element.querySelector(`.film-details__comment-input`);
     this._textField.addEventListener(`input`, this._onCommentInput);
+    this._watchedStatus = this._element.querySelector(`.film-details__watched-status`);
+    this._undoButton = this._element.querySelector(`.film-details__watched-reset`);
+    this._undoButton.addEventListener(`click`, this._onUndoButtonClick);
+  }
+
+  _onUndoButtonClick() {
+    const comments = [...this._data.comments];
+    comments.pop();
+    this.update({comments});
+    this._state.del = true;
+    this._onSubmit(this._data);
   }
 
   _onFormPopupChange(evt) {
@@ -106,8 +117,8 @@ export class Popup extends Component {
       }
       this._inputLabel = this._element.querySelector(`.film-details__user-rating-label[for='rating-${this._inputScore.value}']`);
       this._state.rate = true;
-      this.update(this._getFormFields());
-      this._rerenderRateField();
+      this.update({rate: this._inputScore.value});
+      this._reRenderRateField();
     } else {
       this._emotion = evt.target.closest(`.film-details__emoji-item:checked`);
     }
@@ -128,6 +139,8 @@ export class Popup extends Component {
       this._block();
       this._onSubmit(this._data);
       this._state.isChange = false;
+    } else if (evt.which === 27) {
+      this._close();
     }
   }
 
@@ -155,7 +168,8 @@ export class Popup extends Component {
     if (this._state.text) {
       this._clearComment();
       if (bool) {
-        this._rerenderCommentField();
+        this._reRenderCommentField();
+        this._showAddedCommentStatus();
       } else {
         this._textField.classList.add(`error-comment`);
       }
@@ -163,15 +177,30 @@ export class Popup extends Component {
     }
     if (this._state.rate) {
       if (bool) {
-        this._rerenderRateField();
+        this._reRenderRateField();
       } else {
         this._inputLabel.classList.add(`error-input-score`);
       }
       this._state.rate = false;
     }
+    if (bool && this._state.del) {
+      this._reRenderCommentField();
+      this._showDeletedCommentStatus();
+    }
   }
 
-  shakeForm() {
+  _showDeletedCommentStatus() {
+    this._watchedStatus.innerHTML = `Comment deleted`;
+    this._undoButton.classList.add(`visually-hidden`);
+    this._state.del = false;
+  }
+
+  _showAddedCommentStatus() {
+    this._watchedStatus.innerHTML = `Comment added`;
+    this._undoButton.classList.remove(`visually-hidden`);
+  }
+
+  showErrorOfForm() {
     this._form.classList.add(`shake`);
     const timerForm = setTimeout(() => {
       this._form.classList.remove(`shake`);
@@ -179,7 +208,7 @@ export class Popup extends Component {
     }, 1000);
   }
 
-  _rerenderCommentField() {
+  _reRenderCommentField() {
     if (!this._commentContainer) {
       this._commentContainer = this._element.querySelector(`.film-details__comments-list`);
     }
@@ -187,23 +216,28 @@ export class Popup extends Component {
       this._countField = this._element.querySelector(`.film-details__comments-count`);
     }
     this._countField.innerText = this._data.comments.length;
-    this._commentContainer.appendChild(createElement(createCommentItemTemplate(this._data.comments[this._data.comments.length - 1])));
+    if (this._state.del) {
+      this._commentContainer.removeChild(this._commentContainer.lastElementChild);
+    } else {
+      this._commentContainer.appendChild(createElement(createCommentItemTemplate(this._data.comments[this._data.comments.length - 1])));
+    }
   }
 
-  _rerenderRateField() {
+  _reRenderRateField() {
     if (!this._ratingContainer) {
       this._ratingContainer = this._element.querySelector(`.film-details__rating`);
     }
     this._ratingContainer.replaceChild(createElement(createUserRatingTemplate(this._data.rate)), this._ratingContainer.lastElementChild);
   }
 
-  close() {
+  _close() {
+    this._unbind();
     if (this._element) {
       this._element.remove();
     }
   }
 
-  unbind() {
+  _unbind() {
     this._closeBtn.removeEventListener(`click`, this._onCloseButtonClick);
     this._closeBtn = null;
     document.removeEventListener(`keydown`, this._onDocumentKeyDown);
@@ -212,9 +246,11 @@ export class Popup extends Component {
     this._textField.removeEventListener(`input`, this._onCommentInput);
     this._textField = null;
     this._emotion = null;
+    this._undoButton.removeEventListener(`click`, this._onUndoButtonClick);
+    this._undoButton = null;
   }
 
-  get template() {
+  get _template() {
     return createPopupTemplate(this._data);
   }
 }

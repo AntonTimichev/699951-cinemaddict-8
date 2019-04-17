@@ -9,7 +9,7 @@ export class Component {
     this._element = null;
   }
 
-  get template() {
+  get _template() {
     throw new Error(`You have to define template.`);
   }
 
@@ -28,7 +28,7 @@ export class Component {
   }
 
   render() {
-    this._element = createElement(this.template).children[0];
+    this._element = createElement(this._template).children[0];
     this.bind();
     return this._element;
   }

@@ -13,7 +13,7 @@ export class Filter extends Component {
     this._onFilter(this._element, this._data.id);
   }
 
-  rerender() {
+  reRender() {
     const {label, count} = this._data;
     this._element.innerHTML = `${label} ${count ? createCountTemplate(count) : ``}`;
   }
@@ -26,7 +26,7 @@ export class Filter extends Component {
     this._element.addEventListener(`click`, this._onFilterButtonClick);
   }
 
-  get template() {
+  get _template() {
     return createFilterTemplate(this._data);
   }
 }

@@ -7,17 +7,17 @@ const Method = {
   DELETE: `DELETE`
 };
 
-const checkStatus = (response) => {
+function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
   } else {
     throw new Error(`${response.status}: ${response.statusText}`);
   }
-};
+}
 
-const toJSON = (response) => {
+function toJSON(response) {
   return response.json();
-};
+}
 
 export class API {
   constructor({endPoint, authorization}) {
