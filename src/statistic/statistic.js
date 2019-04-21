@@ -1,14 +1,14 @@
-import {Component} from "../Component";
+import Component from "../component";
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {createStatisticTemplate} from "./create-statistic-template";
 import {createElement} from "../utils";
-import moment from 'moment';
 import {createLabelStatisticTemplate} from "./create-label-statistic-template";
 import {createTextListTemplate} from "./create-text-list-template";
 import {createChartStatisticTemplate} from "./create-chart-statistic-template";
+import moment from 'moment';
 
-export class Statistic extends Component {
+export default class Statistic extends Component {
   constructor(data) {
     super(data);
     this._isChanged = null;
@@ -22,10 +22,42 @@ export class Statistic extends Component {
     this._onTimeFilterFormChange = this._onTimeFilterFormChange.bind(this);
   }
 
-  bind() {
+  get isChanged() {
+    return this._isChanged;
+  }
+
+  set isChanged(value) {
+    this._isChanged = value;
+  }
+
+  get _template() {
+    return createStatisticTemplate(this._calculateDataForDiagram(this._data.slice()));
+  }
+
+  show() {
+    this._element.classList.remove(`visually-hidden`);
+  }
+
+  hide() {
+    this._element.classList.add(`visually-hidden`);
+  }
+
+  update(data) {
+    this._data = data;
+  }
+
+  updateDiagram(data) {
+    if (this._isChanged) {
+      this.update(data);
+    }
+    this._calculateDataForDiagram(data);
+    this._reRender();
+    this._reCalcDiagram();
+  }
+
+  _bind() {
     this._timeFilterForm = this._element.querySelector(`.statistic__filters`);
     this._timeFilterForm.addEventListener(`change`, this._onTimeFilterFormChange);
-
   }
 
   _getPeriodName(value) {
@@ -49,40 +81,24 @@ export class Statistic extends Component {
     }
   }
 
-  get isChanged() {
-    return this._isChanged;
-  }
-
-  set isChanged(value) {
-    this._isChanged = value;
-  }
-
-  _calculateStatistic(data) {
-    this._statistic = {};
+  _calculateDataForDiagram(data) {
+    this._stats = {};
     let totalDuration = 0;
     let watchedCount = 0;
     data.forEach((card) => {
       const {genres, duration} = card.info;
       if (card.watched) {
         genres.forEach((genre) => {
-          if (!this._statistic[genre]) {
-            this._statistic[genre] = 1;
-          } else {
-            this._statistic[genre] += 1;
-          }
+          this._stats[genre] = !this._stats[genre] ? 1 : this._stats[genre] + 1;
         });
         totalDuration += parseInt(duration, 10);
         watchedCount += 1;
       }
     });
-    this._statistic.canvas = this._sortStatistic(this._statistic);
-    this._statistic.totalDuration = totalDuration;
-    this._statistic.watchedCount = watchedCount;
-    return this._statistic;
-  }
-
-  update(data) {
-    this._data = data;
+    this._stats.canvas = this._sortData(this._stats);
+    this._stats.totalDuration = totalDuration;
+    this._stats.watchedCount = watchedCount;
+    return this._stats;
   }
 
   _getStatsForCanvas(data) {
@@ -95,21 +111,12 @@ export class Statistic extends Component {
     return {valuesOfGenres, nameOfGenres};
   }
 
-  updateDiagram(data) {
-    if (this._isChanged) {
-      this.update(data);
-    }
-    this._calculateStatistic(data);
-    this._reRender();
-    this._reCalcDiagram();
-  }
-
   _reRender() {
     this._label = this._element.querySelector(`.statistic__rank`);
     this._textList = this._element.querySelector(`.statistic__text-list`);
     this._chart = this._element.querySelector(`.statistic__chart-wrap`);
-    const newLabel = createElement(createLabelStatisticTemplate(this._statistic.canvas.nameOfGenres[0]));
-    const newTextList = createElement(createTextListTemplate(this._statistic));
+    const newLabel = createElement(createLabelStatisticTemplate(this._stats.canvas.nameOfGenres[0]));
+    const newTextList = createElement(createTextListTemplate(this._stats));
     const newChart = createElement(createChartStatisticTemplate());
     this._element.replaceChild(newLabel, this._label);
     this._element.replaceChild(newTextList, this._textList);
@@ -119,20 +126,16 @@ export class Statistic extends Component {
     this._chart = newChart;
   }
 
-  _sortStatistic(stats) {
+  _sortData(stats) {
     const sortedStats = Object.entries(stats).sort((a, b) => {
       return b[1] - a[1];
     });
     return this._getStatsForCanvas(sortedStats);
   }
 
-  get _template() {
-    return createStatisticTemplate(this._calculateStatistic(this._data.slice()));
-  }
-
   _reCalcDiagram() {
     const statisticCtx = this._element.querySelector(`.statistic__chart`);
-    const {valuesOfGenres, nameOfGenres} = this._statistic.canvas;
+    const {valuesOfGenres, nameOfGenres} = this._stats.canvas;
     const BAR_HEIGHT = 50;
     statisticCtx.height = BAR_HEIGHT * valuesOfGenres.length;
     return new Chart(statisticCtx, {

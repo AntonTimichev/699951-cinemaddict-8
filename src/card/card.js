@@ -1,10 +1,10 @@
 import {createCardTemplate} from './create-card-template';
-import {Component} from "../Component";
+import Component from "../component";
 import {cloneDeep} from 'lodash';
 import {createFormControlsOfCard} from "./create-form-controls-of-card";
 import {createElement} from "../utils";
 
-export class Card extends Component {
+export default class Card extends Component {
   constructor(data) {
     super(data);
     this._onCommentButtonClick = this._onCommentButtonClick.bind(this);
@@ -35,15 +35,43 @@ export class Card extends Component {
     return createCardTemplate(this._data, this._hasControl);
   }
 
-  _onCommentButtonClick(evt) {
-    evt.preventDefault();
-    this._onClickHandler(this.getData());
+  get id() {
+    return this._data.id;
+  }
+
+  getData() {
+    return cloneDeep(this._data);
   }
 
   reRender() {
     const {comments, watchlist, watched, favorite} = this._data;
     this._commentButton.innerText = `${comments.length} comments`;
     this._element.replaceChild(createElement(createFormControlsOfCard(watchlist, watched, favorite)), this._element.lastElementChild);
+  }
+
+  processResponse(bool = true) {
+    if (bool) {
+      if (this._pressedButton.classList.contains(`film-card__controls-item--error`)) {
+        this._pressedButton.classList.remove(`film-card__controls-item--error`);
+      }
+      this._pressedButton.classList.toggle(`film-card__controls-item--active`);
+    } else {
+      this._pressedButton.classList.add(`film-card__controls-item--error`);
+    }
+  }
+
+  _bind() {
+    this._commentButton = this._element.querySelector(`.film-card__comments`);
+    this._commentButton.addEventListener(`click`, this._onCommentButtonClick);
+    if (this._hasControl) {
+      this._controls = this._element.querySelector(`.film-card__controls`);
+      this._controls.addEventListener(`click`, this._onControlsButtonClick);
+    }
+  }
+
+  _onCommentButtonClick(evt) {
+    evt.preventDefault();
+    this._onClickHandler(this.getData());
   }
 
   _onControlsButtonClick(evt) {
@@ -58,33 +86,5 @@ export class Card extends Component {
         this._onMarkAsFavorite(this._data);
       }
     }
-  }
-
-  processResponse(bool = true) {
-    if (bool) {
-      if (this._pressedButton.classList.contains(`film-card__controls-item--error`)) {
-        this._pressedButton.classList.remove(`film-card__controls-item--error`);
-      }
-      this._pressedButton.classList.toggle(`film-card__controls-item--active`);
-    } else {
-      this._pressedButton.classList.add(`film-card__controls-item--error`);
-    }
-  }
-
-  bind() {
-    this._commentButton = this._element.querySelector(`.film-card__comments`);
-    this._commentButton.addEventListener(`click`, this._onCommentButtonClick);
-    if (this._hasControl) {
-      this._controls = this._element.querySelector(`.film-card__controls`);
-      this._controls.addEventListener(`click`, this._onControlsButtonClick);
-    }
-  }
-
-  get id() {
-    return this._data.id;
-  }
-
-  getData() {
-    return cloneDeep(this._data);
   }
 }

@@ -1,7 +1,11 @@
 import moment from 'moment';
-import {emojiOfComment} from "../enums";
 
-export function createCommentItemTemplate(data) {
+export const createCommentItemTemplate = (data) => {
+  const emojiOfComment = {
+    'sleeping': `😴`,
+    'neutral-face': `😐`,
+    'grinning': `😀`
+  };
   const {emotion, comment, author, date} = data;
   const dayAgo = moment(date).fromNow();
   return `<li class="film-details__comment">
@@ -14,4 +18,4 @@ export function createCommentItemTemplate(data) {
       </p>
     </div>
   </li>`;
-}
+};

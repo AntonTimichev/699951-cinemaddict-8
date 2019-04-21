@@ -1,4 +1,5 @@
-import {ModelMovie} from "./Model-movie";
+import ModelMovie from "./model-movie";
+import {STATUS_OK, STATUS_REDIRECT} from "./constants";
 
 const Method = {
   GET: `GET`,
@@ -7,19 +8,18 @@ const Method = {
   DELETE: `DELETE`
 };
 
-function checkStatus(response) {
-  if (response.status >= 200 && response.status < 300) {
+const checkStatus = (response) => {
+  if (response.status >= STATUS_OK && response.status < STATUS_REDIRECT) {
     return response;
-  } else {
-    throw new Error(`${response.status}: ${response.statusText}`);
   }
-}
+  throw new Error(`${response.status}: ${response.statusText}`);
+};
 
-function toJSON(response) {
+const toJSON = (response) => {
   return response.json();
-}
+};
 
-export class API {
+export default class API {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint;
     this._authorization = authorization;
@@ -57,7 +57,7 @@ export class API {
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
-    return fetch(`${this._endPoint}/${url}`, {method, body, headers})
+    return fetch(`${this._endPoint}${url}`, {method, body, headers})
       .then(checkStatus)
       .catch((err) => {
         throw err;

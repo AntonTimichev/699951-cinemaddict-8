@@ -1,5 +1,5 @@
-export function createFormControlsOfCard(watchlist, watched, favorite) {
-  return `<form class="film-card__controls">
+export const createFormControlsOfCard = (watchlist, watched, favorite) => `
+  <form class="film-card__controls">
     <button 
       class="film-card__controls-item button 
       film-card__controls-item--add-to-watchlist 
@@ -22,4 +22,3 @@ export function createFormControlsOfCard(watchlist, watched, favorite) {
       Mark as favorite
     </button>
   </form>`;
-}

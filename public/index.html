@@ -23,11 +23,11 @@
 
     <script>
       navigator.serviceWorker.register(`./sw.js`)
-        .then(function (reg) {
+        .then((reg) => {
           // Регистрация сработала
           console.log(`Registration succeeded. Scope is ` + reg.scope);
         })
-        .catch(function (error) {
+        .catch((error) => {
           // Регистрация прошла неудачно
           console.log(`Registration failed with ` + error);
         });

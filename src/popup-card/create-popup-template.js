@@ -4,7 +4,7 @@ import {createUserRatingTemplate} from "./create-user-rating-template";
 import {createGenreTemplate} from "./create-genre-template";
 import moment from 'moment';
 
-export function createPopupTemplate(data) {
+export const createPopupTemplate = (data) => {
   const {
     title,
     rating,
@@ -154,4 +154,4 @@ export function createPopupTemplate(data) {
     </section>
   </form>
 </section>`;
-}
+};

@@ -1,35 +1,16 @@
 import {createAppTemplate} from "./templates/index";
 import {createElement, createFragment, getCardsDataForContainers, getElementsOfInstances} from "../utils";
-import {Card} from "../card/Card";
-import {Popup} from "../popup-card/Popup-Card";
-import {Filter} from "../filter/FIlter";
-import {Statistic} from "../statistic/Statistic";
-import {API} from "../Api";
-import {Store} from "../Store";
-import {Provider} from "../Provider";
+import Card from "../card/card";
+import Popup from "../popup-card/popup-card";
+import Filter from "../filter/filter";
+import Statistic from "../statistic/statistic";
+import API from "../api";
+import Store from "../store";
+import Provider from "../provider";
+import Search from "../search/search";
 import {cloneDeep} from 'lodash';
-import {Search} from "../search/Search";
 
-const cardsCount = 5;
-let api = null;
-let store = null;
-let provider = null;
-let main = null;
-let filtersContainer = null;
-let mainFilmsContainer = null;
-let topFilmsContainer = null;
-let commentedFilmsContainer = null;
-let activeFilterButton = null;
-let filmsSection = null;
-let statistic = null;
-let header = null;
-let headerProfile = null;
-let showMoreButton = null;
-let startIndex = 0;
-let mainCards = null;
-let topCards = null;
-let commentedCards = null;
-
+const CARDS_COUNT = 5;
 const FILTERS_SETTINGS = [
   {
     id: `all`,
@@ -57,22 +38,36 @@ const FILTERS_SETTINGS = [
     additional: true
   },
 ];
+let api = null;
+let store = null;
+let provider = null;
+let main = null;
+let filtersContainer = null;
+let mainFilmsContainer = null;
+let topFilmsContainer = null;
+let commentedFilmsContainer = null;
+let activeFilterButton = null;
+let filmsSection = null;
+let statistic = null;
+let header = null;
+let headerProfile = null;
+let showMoreButton = null;
+let startIndex = 0;
+let mainCards = null;
+let topCards = null;
+let commentedCards = null;
 
-function createAppElement() {
+const createAppElement = () => {
   const template = createAppTemplate();
   return createElement(template);
-}
+};
 
-function getFilteredByNameData(subStr) {
-  return provider.getAllData().filter((card) => {
-    return card.title.toLowerCase().includes(subStr.toLowerCase());
-  });
-}
+const getFilteredByNameData = (subStr) => provider.getAllData().filter((card) => card.title.toLowerCase().includes(subStr.toLowerCase()));
 
-function initHeader(container) {
+const initHeader = (container) => {
   headerProfile = container.querySelector(`.header__profile`);
   const search = new Search();
-  search.onSearch = (subStr) => {
+  search.onChange = (subStr) => {
     setInitShowMoreButton();
     hideStatistic();
     changeActiveFilter();
@@ -80,24 +75,24 @@ function initHeader(container) {
     renderMainCards(getRenderedMainCards());
   };
   container.insertBefore(search.render(), headerProfile);
-}
+};
 
-function onShowMoreButtonClick() {
+const onShowMoreButtonClick = () => {
   const renderedCards = getRenderedMainCards();
   renderMainCards(renderedCards, true);
-}
+};
 
-function getRenderedMainCards() {
-  const lastIndex = startIndex + cardsCount;
+const getRenderedMainCards = () => {
+  const lastIndex = startIndex + CARDS_COUNT;
   const cards = mainCards.slice(startIndex, lastIndex);
   startIndex = lastIndex;
   if (startIndex >= mainCards.length) {
     showMoreButton.classList.add(`visually-hidden`);
   }
   return cards;
-}
+};
 
-function changeUserRank() {
+const changeUserRank = () => {
   const count = provider.getAllData().filter((item) => item[`watched`]).length;
   let rank = ``;
   if (count >= 1 && count <= 7) {
@@ -108,19 +103,11 @@ function changeUserRank() {
     rank = `movie buff`;
   }
   headerProfile.innerHTML = `<p class="profile__rating">${rank}</p>`;
-}
+};
 
-function getFilteredCardsData(cardsData, id) {
-  if (id === `all`) {
-    return cardsData;
-  } else {
-    return cardsData.filter((cardInfo) => {
-      return cardInfo[id];
-    });
-  }
-}
+const getFilteredCardsData = (cardsData, id) => id === `all` ? cardsData : cardsData.filter((cardInfo) => cardInfo[id]);
 
-function changeFilterValueForCards(filterId) {
+const changeFilterValueForCards = (filterId) => {
   mainCards = provider.getAllData();
   if (filterId === `history`) {
     filterId = `watched`;
@@ -142,19 +129,19 @@ function changeFilterValueForCards(filterId) {
       showStatistic();
       break;
   }
-}
+};
 
-function showStatistic() {
+const showStatistic = () => {
   filmsSection.classList.add(`visually-hidden`);
-  statistic.element.classList.remove(`visually-hidden`);
-}
+  statistic.show();
+};
 
-function hideStatistic() {
+const hideStatistic = () => {
   if (filmsSection.classList.contains(`visually-hidden`)) {
     filmsSection.classList.remove(`visually-hidden`);
-    statistic.element.classList.add(`visually-hidden`);
+    statistic.hide();
   }
-}
+};
 
 const filtersInstances = FILTERS_SETTINGS.map((info) => {
   const filter = new Filter(info);
@@ -166,26 +153,21 @@ const filtersInstances = FILTERS_SETTINGS.map((info) => {
   return filter;
 });
 
-function changeActiveFilter(filter = null) {
+const changeActiveFilter = (filter = null) => {
   if (activeFilterButton) {
     activeFilterButton.classList.remove(`main-navigation__item--active`);
   }
-  if (filter) {
-    filter.classList.add(`main-navigation__item--active`);
-    activeFilterButton = filter;
-  } else {
-    activeFilterButton = null;
-  }
-}
+  activeFilterButton = filter ? filter : null;
+};
 
-function setInitShowMoreButton() {
+const setInitShowMoreButton = () => {
   startIndex = 0;
   if (showMoreButton.classList.contains(`visually-hidden`)) {
     showMoreButton.classList.remove(`visually-hidden`);
   }
-}
+};
 
-function getInstancesOfCards(data, hasControl = false) {
+const getInstancesOfCards = (data, hasControl = false) => {
   return data.map((info) => {
     const card = new Card(cloneDeep(info));
     card.hasControl = hasControl;
@@ -247,9 +229,9 @@ function getInstancesOfCards(data, hasControl = false) {
     };
     return card;
   });
-}
+};
 
-function changeFilter(...filtersId) {
+const changeFilter = (...filtersId) => {
   filtersId.forEach((filterId) => {
     const filterInstance = filtersInstances.find((filterInst) => filterInst._data.id === filterId);
     if (filterId === `history`) {
@@ -258,44 +240,44 @@ function changeFilter(...filtersId) {
     filterInstance.update({count: provider.getAllData().filter((item) => item[filterId]).length});
     filterInstance.reRender();
   });
-}
+};
 
-export function renderMainCards(data, isAdded = false) {
+export const renderMainCards = (data, isAdded = false) => {
   if (!isAdded) {
     mainFilmsContainer.innerHTML = ``;
   }
   const instances = getInstancesOfCards(data, true);
   const elements = createFragment(getElementsOfInstances(instances));
   mainFilmsContainer.appendChild(elements);
-}
+};
 
-export function renderTopCards(data) {
+export const renderTopCards = (data) => {
   topFilmsContainer.innerHTML = ``;
   const instances = getInstancesOfCards(data);
   const elements = createFragment(getElementsOfInstances(instances));
   topFilmsContainer.appendChild(elements);
-}
+};
 
-export function renderCommentedCards(data) {
+export const renderCommentedCards = (data) => {
   commentedFilmsContainer.innerHTML = ``;
   const instances = getInstancesOfCards(data);
   const elements = createFragment(getElementsOfInstances(instances));
   commentedFilmsContainer.appendChild(elements);
-}
+};
 
-export function renderFilters(elements) {
+export const renderFilters = (elements) => {
   filtersContainer.innerHTML = ``;
   filtersContainer.appendChild(elements);
-}
+};
 
-export function initFilters() {
+export const initFilters = () => {
   renderFilters(createFragment(getElementsOfInstances(filtersInstances)));
   changeFilter(`watchlist`, `history`, `favorite`);
   changeUserRank();
   activeFilterButton = filtersContainer.querySelector(`.main-navigation__item--active`);
-}
+};
 
-export function initApp({endPoint, authorization}, key, container) {
+export const initApp = ({endPoint, authorization}, key, container) => {
   api = new API({endPoint, authorization});
   store = new Store({key, storage: localStorage});
   provider = new Provider({api, store});
@@ -309,21 +291,21 @@ export function initApp({endPoint, authorization}, key, container) {
   provider.getMovies()
     .then(() => {
       [mainCards, topCards, commentedCards] = getCardsDataForContainers(provider.getAllData());
-      const appElement = createAppElement();
-      header = appElement.querySelector(`header.header`);
+      const app = createAppElement();
+      header = app.querySelector(`header.header`);
       initHeader(header);
-      main = appElement.querySelector(`main`);
+      main = app.querySelector(`main`);
       filtersContainer = main.querySelector(`.main-navigation`);
       mainFilmsContainer = main.querySelector(`.films-list .films-list__container`);
       topFilmsContainer = main.querySelector(`.films-list--extra:nth-last-child(2) .films-list__container`);
       commentedFilmsContainer = main.querySelector(`.films-list--extra:last-child .films-list__container`);
       filmsSection = main.querySelector(`.films`);
-      const footerStatistic = appElement.querySelector(`.footer__statistics`);
+      const footerStatistic = app.querySelector(`.footer__statistics`);
       footerStatistic.innerHTML = `<p>${mainCards.length} movies inside</p>`;
       showMoreButton = main.querySelector(`.films-list__show-more`);
       showMoreButton.addEventListener(`click`, onShowMoreButtonClick);
       container.innerHTML = ``;
-      container.appendChild(appElement);
+      container.appendChild(app);
       initFilters();
       statistic = new Statistic(cloneDeep(provider.getAllData()));
       statistic.isChanged = true;
@@ -334,4 +316,4 @@ export function initApp({endPoint, authorization}, key, container) {
     }).catch(() => {
       container.querySelector(`.modal_container`).innerText = `Something went wrong while loading movies. Check your connection or try again later`;
     });
-}
+};

@@ -1,3 +1,1 @@
-export function createNavigationTemplate() {
-  return `<nav class="main-navigation"></nav>`;
-}
+export const createNavigationTemplate = () => `<nav class="main-navigation"></nav>`;

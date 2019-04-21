@@ -1,28 +1,32 @@
-import {Component} from "../Component";
-import {creareTemplateSearchForm} from "./create-template-search-form";
+import Component from "../component";
+import {createTemplateSearchForm} from "./create-template-search-form";
 
-export class Search extends Component {
+export default class Search extends Component {
   constructor() {
     super();
-    this._onInput = this._onInput.bind(this);
+    this._onTextFieldInput = this._onTextFieldInput.bind(this);
     this._onSearchButtonClick = this._onSearchButtonClick.bind(this);
     this._onDocumentClick = this._onDocumentClick.bind(this);
   }
 
-  set onSearch(func) {
-    this._onSearch = func;
+  set onChange(func) {
+    this._onChange = func;
   }
 
-  bind() {
+  get _template() {
+    return createTemplateSearchForm();
+  }
+
+  _bind() {
     this._input = this._element.querySelector(`.search__field`);
-    this._input.addEventListener(`input`, this._onInput);
+    this._input.addEventListener(`input`, this._onTextFieldInput);
     this._searchButton = this._element.querySelector(`button`);
     this._searchButton.addEventListener(`click`, this._onSearchButtonClick);
   }
 
   _onSearchButtonClick(evt) {
     evt.preventDefault();
-    this._onSearch(this._input.value);
+    this._onChange(this._input.value);
     document.addEventListener(`click`, this._onDocumentClick);
   }
 
@@ -34,15 +38,11 @@ export class Search extends Component {
     }
   }
 
-  _onInput() {
+  _onTextFieldInput() {
     if (this._input.value) {
       this._searchButton.classList.remove(`visually-hidden`);
     } else {
       this._searchButton.classList.add(`visually-hidden`);
     }
-  }
-
-  get _template() {
-    return creareTemplateSearchForm();
   }
 }

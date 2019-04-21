@@ -1,3 +1,1 @@
-export function createGenreTemplate(genre) {
-  return `<span class="film-details__genre">${genre}</span>`;
-}
+export const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;

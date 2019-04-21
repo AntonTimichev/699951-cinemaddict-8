@@ -1,5 +1,5 @@
-export function createCardsSectionTemplate() {
-  return `<section class="films">
+export const createCardsSectionTemplate = () => `
+  <section class="films">
     <section class="films-list">
       <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
 
@@ -26,4 +26,3 @@ export function createCardsSectionTemplate() {
       </div>
     </section>
   </section>`;
-}

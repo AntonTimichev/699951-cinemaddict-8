@@ -1,3 +1,1 @@
-export function createCountTemplate(count) {
-  return `<span class="main-navigation__item-count">${count}</span>`;
-}
+export const createCountTemplate = (count) => `<span class="main-navigation__item-count">${count}</span>`;

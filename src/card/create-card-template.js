@@ -1,8 +1,8 @@
 import moment from 'moment';
 import {createFormControlsOfCard} from "./create-form-controls-of-card";
-import {MSK_IN_MINUTES} from "../enums";
+import {MSK_IN_MINUTES} from "../constants";
 
-function prepareDataForTemplate(data) {
+const prepareDataForTemplate = (data) => {
   const {
     title = ``,
     rating = ``,
@@ -30,9 +30,22 @@ function prepareDataForTemplate(data) {
     watched,
     favorite
   };
-}
+};
 
-export function createCardTemplate(data, hasControl) {
+const createCardInfo = (infoData) => {
+  const {releaseTime, duration, genres} = infoData;
+  const durationTimestamp = duration * MSK_IN_MINUTES;
+  const minutes = moment.duration(durationTimestamp).get(`minutes`);
+  const runTime = `${moment.duration(durationTimestamp).get(`hours`)}:${minutes < 10 ? `0${minutes}` : minutes}`;
+  const year = moment(releaseTime).format(`YYYY`);
+  return `<p class="film-card__info">
+    <span class="film-card__year">${year}</span>
+    <span class="film-card__duration">${runTime}</span>
+    <span class="film-card__genre">${genres.join(` `)}</span>
+  </p>`;
+};
+
+export const createCardTemplate = (data, hasControl) => {
   const {title, rating, src, description = false, comments, info, watchlist, watched, favorite} = prepareDataForTemplate(data);
   return `<article class="film-card ${!hasControl ? `film-card--no-controls` : ``}">
     <h3 class="film-card__title">${title}</h3>
@@ -44,17 +57,4 @@ export function createCardTemplate(data, hasControl) {
     
     ${hasControl ? createFormControlsOfCard(watchlist, watched, favorite) : ``}
   </article>`;
-}
-
-function createCardInfo(infoData) {
-  const {releaseTime, duration, genres} = infoData;
-  const durationTimestamp = duration * MSK_IN_MINUTES;
-  const minutes = moment.duration(durationTimestamp).get(`minutes`);
-  const runTime = `${moment.duration(durationTimestamp).get(`hours`)}:${minutes < 10 ? `0${minutes}` : minutes}`;
-  const year = moment(releaseTime).format(`YYYY`);
-  return `<p class="film-card__info">
-    <span class="film-card__year">${year}</span>
-    <span class="film-card__duration">${runTime}</span>
-    <span class="film-card__genre">${genres.join(` `)}</span>
-  </p>`;
-}
+};
