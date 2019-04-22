@@ -152,12 +152,13 @@ export default class Popup extends Component {
       rate: parseInt(this._data.rate, 10) || 0
     };
     const cardEditMapper = Popup.createMapper(entry);
-    for (const pair of formData.entries()) {
+    const entries = [...formData.entries()];
+    entries.forEach((pair) => {
       const [property, value] = pair;
       if (cardEditMapper[property] && value) {
         cardEditMapper[property](value);
       }
-    }
+    });
     if (this._state.text) {
       entry.newComment.emotion = entry.newComment.emotion || `neutral-face`;
       entry.comments.push(entry.newComment);
